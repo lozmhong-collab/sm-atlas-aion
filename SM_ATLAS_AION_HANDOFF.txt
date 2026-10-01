@@ -44,6 +44,11 @@ Claude/Codex 지원과 UI를 유지하고, 사내 환경 차이는 adapter/인�
 - 설정 → 에이전트 → 회사 환경 진단: OS/저장 권한/자식 프로세스/loopback/PATH의 CLI 버전 점검.
 - 번들 Node로 진단하므로 직원 PC의 글로벌 Node 설치에 의존하지 않는다.
 - 진단 보고서 JSON 저장: 키 값은 제외, 사용자 홈 경로는 가림, 인증/프록시 환경변수는 존재 여부만 기록.
+- Windows .cmd/.bat 버전 진단의 cmd.exe 이중 인용부호 파싱 오류 수정.
+  /d /s /v:off /c + 명령 전체의 바깥 인용부호 + 실행 경로의 안쪽 인용부호 + windowsVerbatimArguments:true를 함께 적용.
+  이 처리는 고정 --version 진단 전용이다. 채팅 prompt나 임의 shell 인자 조합에 재사용하지 않는다.
+  %, 큰따옴표, CR/LF, NUL을 포함한 CMD 경로는 실행 없이 거절하고 다음 발견 후보를 시도한다.
+  .exe/.ps1에는 verbatim 인자를 적용하지 않는다. 기존 설치판은 재빌드해야 이 수정이 포함된다.
 - 새 UI 문구는 한국어·영어 제공. 나머지 upstream 언어에는 해당 새 문구를 영어로 제공한다.
 - 모바일 반응형/PWA, 팀/예약 작업, 외부 피드백/마켓/링크 등 upstream 소스는 일부 남아 있다.
   모바일 서비스는 배포하지 않았지만 해당 소스를 전부 삭제한 것은 아니다. 회사 배포 전 정책 점검 필요.
@@ -51,6 +56,14 @@ Claude/Codex 지원과 UI를 유지하고, 사내 환경 차이는 adapter/인�
 3. 실제 확인한 결과와 한계
 - TypeScript noEmit, 번역 key 검사, 변경 파일 format 검사와 lint 오류 0.
 - 관련 unit/DOM 테스트 27개 통과. 전체 upstream 테스트/전체 coverage가 통과했다는 뜻은 아니다.
+- CMD 수정 후 진단 회귀 테스트 25개 통과: 실제 Windows .cmd 공백/한글/특수문자 경로,
+  .BAT, 없는 파일, unsafe 경로 거절, native 실행과 기존 파싱 실패 재현을 포함한다.
+- 이번 수정 후 관련 5개 테스트 파일의 39개 테스트, TypeScript noEmit, 변경 파일 format,
+  packages/tests/scripts lint 오류 0, TXT 복원 도구 테스트 8개를 확인했다.
+- 전체 테스트도 실행했으며 4,989개 통과 / 32개 실패 / 6개 skip, 파일 기준 518 통과 / 9 실패 / 1 skip이다.
+  SM Atlas 이름/업데이트 비활성화/지원 agent/MCP bootstrap 정책과 upstream 기대값 차이,
+  Windows에서 Unix 릴리스 스크립트 실행 환경 등이 확인된다. 전체 green/coverage 통과로 표시하지 않는다.
+  해당 전체-suite 정합성 작업은 이번 CMD 버그 수정 범위에서 해결하지 않았다.
 - 패키지 UI 테스트 3개 통과: 진단 실행·비밀값 없는 보고서 저장, WebUI 설정 redirect, 지원되는 발견 agent만 표시.
 - 최종 EXE --webui는 exit code 64로 거절하는 것을 별도로 확인.
 - Windows Electron main/preload/renderer build 및 NSIS 설치 파일 생성 성공.
