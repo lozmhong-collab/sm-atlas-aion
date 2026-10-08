@@ -1,10 +1,12 @@
-SM ATLAS AION — 프로젝트·세션 중심 구현 소스 전달
-TXT 작성일: 2026-10-08 / 구현·실행 검증일: 2026-10-02 / 제품 버전: 0.1.0
+SM ATLAS — 프로젝트·세션, 회사 기능 및 설치 프로그램 개선 소스 전달
+TXT 작성일: 2026-10-08 / 최신 구현·검증일: 2026-10-08 / 제품 버전: 0.1.0
 
 이번 전달 내용
 사용자가 요청한 기본 구조는 "프로젝트 경로 → 여러 독립 세션"이다.
 팀 생성이 메인 흐름이 아니다. 팀·예약 작업·어시스턴트 관리는 필요할 때 펼치는 부가 기능이다.
 이 TXT는 프로젝트 전체 소스와 파일 복원 도구를 포함한다. 실행 EXE를 TXT로 바꾼 파일은 아니다.
+기존 프로젝트·세션 변경에 회사용 명칭·기본 스킬·MCP 안내와 Windows 설치기 개선을 추가했다.
+기존 다운로드/복원 절차와 호환되도록 Git 저장소 및 TXT 파일 이름은 그대로 유지한다.
 
 구현된 사용 흐름
 1. 사이드바의 "프로젝트 추가"로 실제 작업 폴더를 등록한다.
@@ -24,6 +26,46 @@ TXT 작성일: 2026-10-08 / 구현·실행 검증일: 2026-10-02 / 제품 버전
 - 프로젝트의 파일 패널과 미리보기 범위를 새 세션 작성 화면에서도 이어받는다.
 - 새 문구는 한국어와 영어를 제공한다. 나머지 upstream 언어에는 해당 새 문구를 영어로 제공한다.
 - 기존 SM Atlas 제품 정책과 회사 환경 진단 기능도 포함한다.
+
+회사 기능 수정 — 2026-10-08
+- 앱 화면, 번역, 알림, 설치 문구의 제품 이름을 SM Atlas로 정리했다.
+  upstream 라이선스/저작권과 기존 저장 키·환경변수·백엔드 API 식별자는 호환성을 위해 유지한다.
+- 회사 프로필의 소개 화면에서 원본 공개 서비스 링크와 소비자용 업데이트 설정을 숨겼다.
+- resources/company-skills에 회사용 기본 스킬 12개를 따로 구성했다.
+  자동 주입 6개: company-context, sm-atlas-config, skill-creator, cron, conversation-create, session-message.
+  선택 6개: pdf, mermaid, officecli, officecli-docx, officecli-xlsx, officecli-pptx.
+  원본 WebUI·메신저·SNS·채용·moltbook·openclaw 설치 스킬은 실제 기본 카탈로그와 주입에서 제외한다.
+- 개발/패키지 실행 시 회사 스킬 경로를 백엔드에 지정한다. 필수 파일이 없으면 원본 스킬로 대체하지 않는다.
+- 스킬은 지시문과 도구 사용 절차다. 문서·도식 도구의 별도 의존성 설치가 필요할 수 있다.
+  목록에 있다는 이유만으로 회사 PC에서 모든 기능의 실제 실행이 확인된 것은 아니다.
+- 앱 지원 agent 범위인 Claude/Codex로 스킬 화면의 비서 목록을 제한했다.
+  비활성화한 원본 butler 기능 대신 현재 agent의 새 세션 화면으로 요청을 연결한다.
+- 사내 MCP는 stdio 명령/환경변수 또는 HTTP URL/헤더로 등록할 수 있다.
+  MCP 서버 인증은 H-Chat 인증과 별개다. 설정의 연결 시험은 handshake/도구 목록 확인이며 모델의 실제 도구 호출과 다르다.
+- 현재 포함된 백엔드 v0.2.2의 Codex 어댑터는 사용자 지정 HTTP 헤더를 전달하지 않고 SSE를 건너뛴다.
+  이 제한을 화면에 안내했다. Rust 백엔드 수정/새 바이너리 배포는 이번 소스 변경에 포함하지 않았다.
+  Claude 어댑터는 해당 헤더·환경변수·SSE를 전달한다. 회사 서버에서의 실제 인증/도구 호출은 별도 확인해야 한다.
+- MCP 선택은 세션 생성 시 스냅샷에 반영된다. 전역 토글 변경이 기존 실행 세션에 즉시 적용된다고 가정하지 않는다.
+
+Windows 설치 화면·진행률·속도 개선 — 2026-10-08
+- 파란 배경과 기본 모니터 그림을 밝은 회색 SM Atlas 디자인과 프로젝트/세션 그림으로 교체했다.
+  설치·제거 화면의 사이드바와 설치 단계의 헤더에 일관된 디자인을 적용했다.
+  비트맵 원본은 resources/windows/support/generate-installer-art.ps1로 다시 만들 수 있다.
+- 전용 전체 진행률 막대와 단계 설명을 표시한다. 플러그인의 기본 막대가 초기화되어도 전체 비율은 감소하지 않는다.
+  준비 → 기존 설치 정리 → 압축 해제 → 파일 배치 → 등록 → 검증 순서이며 검증 성공 이후에만 100%가 된다.
+  x64 압축 해제는 실제 처리 바이트를 반영한다. 파일 배치는 최상위 항목 개수와 단계별 가중치를 사용한다.
+  이 비율은 남은 시간 비율이 아니다. ARM64 ZIP 경로는 단계 완료 시 갱신한다.
+- 일반 설치 로그를 PowerShell 프로세스 호출 없이 UTF-8 JSONL로 기록한다.
+  긴 메시지, 한글, 인용부호와 역슬래시를 처리한다. 복잡한 실패 진단의 기존 PowerShell 경로는 유지한다.
+- 설치 드라이브 안에 임시 폴더를 만들어 압축을 풀고 파일/디렉터리를 이동한다.
+  정상 경로에서 큰 resources 폴더를 다시 복사하는 비용을 줄였다. 충돌 시 복사·재시도 경로를 유지한다.
+  주 실행 파일이 없으면 파일 배치 전에 실패 처리한다.
+- 빌드는 의존성 캐시를 직접 수정하지 않고 out/installer-builder의 NSIS 템플릿 복사본을 사용한다.
+  artifactBuildStarted 훅으로 기존 제거 프로그램 생성 절차를 유지한다. 기본 NSIS 설정은 x64다.
+- 새 설치 EXE를 개발 환경에서 생성했다. Git에는 소스/인수 TXT만 전달하며 실행 파일은 포함하지 않는다.
+  디자인 비트맵은 이미지로 확인했다. 실제 설치 화면 시각 검증과 회사 PC 전체 설치 시간 측정은 아직 남아 있다.
+  생성한 시험 설치기는 이전에 검증한 앱 폴더를 재사용했으며 Authenticode 상태는 NotSigned다.
+  압축 설정을 낮춘 시험 빌드이므로 설치 파일 크기 감소를 확인한 결과는 아니다.
 
 회사 환경에 합치는 방법
 이 파일은 로컬 작업공간의 전체 소스 스냅샷이다. 회사 GitLab의 최신 수정본을 내려받아 합친 결과가 아니다.
@@ -56,11 +98,42 @@ packages/desktop/src/renderer/services/i18n/i18n-keys.d.ts
  tests/e2e/cases/smatlas/projectSessions.e2e.ts
  docs/guides/sm-atlas-company-environment.md
 
+이번 추가 변경에서 먼저 비교할 파일
+README.md
+packages/desktop/src/common/productProfile.ts
+packages/desktop/src/process/backend/companySkills.ts
+packages/desktop/src/index.ts
+packages/desktop/src/renderer/components/settings/SettingsModal/contents/AboutModalContent.tsx
+packages/desktop/src/renderer/hooks/assistant/useTalkToButler.ts
+packages/desktop/src/renderer/pages/settings/ToolsSettings/
+packages/desktop/src/renderer/pages/settings/components/AddMcpServerModal.tsx
+packages/desktop/src/renderer/pages/settings/SkillsSettings/
+packages/desktop/src/renderer/services/i18n/locales/
+resources/company-skills/
+packages/desktop/electron-builder.yml
+scripts/build-with-builder.js
+resources/windows/installer-common.nsh
+resources/windows/installer-observability.nsh
+resources/windows/installer-process-control.nsh
+resources/windows/installer-update-verify.nsh
+resources/windows/installer-messages.nsh
+resources/windows/support/installer-template.cjs
+resources/windows/support/installer-ui.nsh
+resources/windows/support/installer-locales.generated.nsh
+resources/windows/support/generate-installer-art.ps1
+resources/windows/support/installer-sidebar.bmp
+resources/windows/support/installer-header.bmp
+tests/unit/build-scripts/windowsInstaller.test.ts
+tests/e2e/cases/smatlas/installerRuntime.nsi
+tests/e2e/cases/smatlas/installerRuntime.smoke.cjs
+docs/guides/sm-atlas-company-environment.md
+정확한 변경 파일 목록은 전체 TXT의 CURRENT SM ATLAS CHANGED/NEW FILES를 참고한다.
+
 소스의 출처와 포함 범위
 - AionUi v2.2.2, commit 6744099b279b991c17e31c243f0920477bd31cb6 기준의 SM Atlas.
 - AionCore 런타임 기준은 v0.2.2.
 - 위 기준에 로컬 SM Atlas 변경을 반영한 전체 소스다. 변경분만 담은 파일이 아니다.
-- PNG/ICO/ICNS 등의 리소스는 Base64로 담아 원래 바이트로 복원한다.
+- PNG/ICO/ICNS/BMP 등의 리소스는 Base64로 담아 원래 바이트로 복원한다. 새 설치 디자인 BMP도 포함한다.
 - Git 이력, node_modules, 빌드 출력, 실행 EXE, AionCore 바이너리, 개인 테스트 profile, 로그와 비밀키는 포함하지 않는다.
 - upstream 소개용 resources 최상위 GIF/MP4는 제외한다.
 - 복원 후 빌드에는 의존성과 승인된 Electron/AionCore/CLI 런타임 준비가 필요하다.
@@ -83,7 +156,7 @@ Node가 준비된 환경에서:
 분할본을 받았다면 SM_ATLAS_AION_PARTS.txt의 번호 순서와 SHA-256을 확인하고,
 모든 part TXT를 바이트 그대로 합친 뒤 전체 TXT를 검증·복원한다. 조각을 편집기로 재저장하지 않는다.
 
-확인된 검증 결과 — 2026-10-02 기준
+이전 프로젝트·세션 검증 결과 — 2026-10-02 기준
 - 전체 unit/DOM/integration/regression: 5,050개 통과, 실패 0, 기존 skip 6.
 - 마지막 경로 정리 변경까지 포함한 관련 테스트: 76개 통과.
 - TypeScript, 13개 언어 i18n 검사, 변경 파일 formatting/lint 검사 통과.
@@ -93,7 +166,28 @@ Node가 준비된 환경에서:
   새 세션 경로 유지, 등록 해제 시 경로 정리와 실제 폴더 유지 확인.
 - 최종 renderer가 패키지와 일치하며 번들 리소스와 SQLite native binary 검사 통과.
 - 이 로컬 검증에서 실제 회사 모델 요청은 보내지 않았다.
-- 2026-10-08에는 소스를 다시 실행 검증한 것이 아니라 TXT 생성·무결성·복원을 검증한다.
+
+최신 회사 기능 및 설치기 검증 결과 — 2026-10-08
+- 회사 기능 변경 후 전체 단위/DOM/통합/회귀 검사: 5,057개 통과, 실패 4개, 기존 skip 6개.
+  실패 3개는 Windows 심볼릭 링크 생성 권한, 1개는 Git Bash 릴리스 fixture 임시 경로 실행 문제다.
+  전체 검사가 모두 통과한 것으로 해석하지 않는다.
+- TypeScript, i18n 검사, 변경 파일 포맷/lint 오류 검사와 Electron main/preload/renderer 빌드 통과.
+- 실제 번들 백엔드를 격리 실행해 회사 기본 스킬 12개의 검색과 원본 제외 목록을 확인했다.
+- 로컬 예제 stdio MCP의 등록, 환경변수 전달, handshake, 도구 목록, 활성화 상태 저장을 확인했다.
+  회사 MCP 서버나 실제 Claude/Codex 모델의 도구 호출 검증은 하지 않았다. 실제 모델 프롬프트를 보내지 않았다.
+- 패키지 GUI는 현재 환경의 Chromium GPU 자식 프로세스 종료로 창 생성 전에 실패했다.
+  이전 패키지에서도 같은 종료를 재현했다. 새 회사 기능 화면의 실제 GUI 검증은 완료하지 못했다.
+- 설치기 관련 집중 단위 검사 9개 통과. 더 넓은 16개 검사에서는 15개 통과,
+  기존 Git Bash 릴리스 fixture 1개가 임시 경로 권한 문제로 실패했다.
+  설치기 변경 후 전체 5천여 개 검사를 다시 실행한 결과는 아니다.
+- 실제 NSIS 컴파일과 격리된 native 시험 실행으로 한글/긴 JSON 로그, 레지스터·스택 보존,
+  압축 해제와 파일 배치, 충돌 시 기존 파일 보존, 임시 폴더 정리, 비율 단조 증가,
+  검증 전 100% 차단 및 실행 파일 누락 시 실패를 확인했다.
+  이 시험은 실제 앱 설치·레지스트리 등록·기존 앱 종료·설치 화면 조작을 수행하지 않는다.
+- 동일한 개발 환경에서 일반 로그 20회: 기존 PowerShell 방식 14,033ms → 새 방식 115ms.
+  로그 구간만의 측정이다. 전체 설치 시간이나 회사 PC 속도가 이 비율로 개선된다는 뜻은 아니다.
+- 최종 x64 NSIS 설치 EXE 생성 완료. 회사 PC에서의 전체 설치 시간/실제 화면/보안 프로그램 허용은 추가 확인한다.
+- TXT 생성 후 내장 복원 도구, 파일 SHA-256과 새 폴더 복원을 별도로 검증해 전달한다.
 
 회사 Claude에게 전달할 요청문
 첨부 TXT에서 복원 도구를 추출하고 검토한 뒤 --verify/--list로 확인하고 새 폴더에 복원해 줘.
@@ -101,3 +195,8 @@ Node가 준비된 환경에서:
 팀 생성은 부가 기능으로 유지하고, 기존 회사 CLI/H-Chat/CA/프록시/빌드 설정은 보존해 줘.
 회사 최신 GitLab 소스와 관련 변경 파일을 비교해서 합치고, 기존 작업을 전체 덮어쓰기하지 마.
 프로젝트 등록·복원·새 세션·전환·등록 해제를 실제 회사 환경에서 확인해 줘.
+이번에는 SM Atlas 명칭, 회사 기본 스킬 12개, 사내 MCP 연결 안내와 제한도 함께 반영해 줘.
+기존 Codex 어댑터의 HTTP 헤더/SSE 제한을 실제 수정된 것으로 오해하지 마.
+설치 디자인 BMP와 NSIS 템플릿/진행률/로그/파일 이동 변경을 빠뜨리지 말고 적용해 줘.
+회사 PC에서 설치 화면, 감소하지 않는 전체 비율, 성공 후 100%, 실제 설치 시간을 확인해 줘.
+남은 환경 제약과 코드 서명 상태는 이 문서 및 회사 환경 가이드에 적힌 기준으로 판단해 줘.
