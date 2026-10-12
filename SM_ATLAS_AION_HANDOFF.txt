@@ -1,5 +1,78 @@
-SM ATLAS — 프로젝트별 컨플루언스 MCP 문서 업무 기능 소스 전달
-TXT 작성일: 2026-10-10 / 최신 구현·검증일: 2026-10-10 / 제품 버전: 0.1.0
+SM ATLAS — MCP 가져오기 보정·세션 삭제·한국어/제품 문구 수정 소스 전달
+TXT 작성일: 2026-10-12 / 최신 구현·검증일: 2026-10-12 / 제품 버전: 0.1.0
+
+이번 추가 수정 — 2026-10-12
+- 회사 사진의 command 전체 명령줄은 Atlas 가져오기 코드의 정규화 문제다. 정상 동작하는 개인 Claude MCP의 문제로 돌리지 않는다.
+  Windows 실행 파일 경로와 인자를 분리해 command/args로 저장한다. 공백 경로, 따옴표, 역슬래시, 기존 PAT와 env 값을 보존한다.
+  적용 지점: 원클릭 가져오기, JSON 등록/편집, 연결 검사, 세션 MCP 전달, Electron 컨플 커넥터.
+  이미 Atlas에 저장된 잘못된 stdio 항목도 도구 목록 로딩 시 동일 ID로 보정한다. 원본 Claude/Codex 설정은 수정하지 않는다.
+  잘못 닫힌 따옴표나 충돌하는 인자는 임의로 복구하지 않는다. 연결 오류는 X 표시에서 확인하며 토큰/인증 헤더는 가린다.
+- 세션 … 메뉴에 삭제를 추가한다. 보관은 유지한다. 삭제 확인 후 해당 세션만 영구 삭제하며 프로젝트 폴더/파일은 삭제하지 않는다.
+- MCP 가져오기 등 화면 문구를 SM Atlas로 수정하고 MCP 항목의 톱니바퀴를 hover 없이 표시한다.
+- 팀원 제거 확인창에 앱 언어의 삭제 / 취소 버튼을 명시한다.
+- 기본 스킬 설명과 스킬 관리 안내를 한국어로 표시하고 표시된 설명으로 검색한다. 사용자 스킬 원문은 덮어쓰지 않는다.
+- /aionui-config를 /sm-atlas-config로 표시한다. 이전 CLI가 구 이름만 제공하면 실행 시에만 그 이름으로 매핑한다.
+  실제 새 이름이 제공되면 새 명령을 우선한다. 스킬의 기존 내부 ID/연결과 이전 설정 식별자는 보존한다.
+- / 목록은 앱 자체 명령 + Claude/Codex 명령 + 연결된 스킬이다. 모든 / 명령이 스킬은 아니다.
+  스킬은 설정 → 스킬과 어시스턴트의 스킬 선택에서 관리하고 실제 지침은 SKILL.md에 있다. CLI 명령은 해당 CLI에서 관리한다.
+  모든 / 명령을 별도로 편집하는 통합 관리 화면을 새로 만든 것은 아니다.
+- 사용자에게 보이는 제품 이름은 SM Atlas로 바꾸되 라이선스/저작권/출처 URL과 AIONUI_* 런타임 식별자는 유지한다.
+
+회사에서 이번 수정을 적용하는 순서
+1. 이번 TXT를 새 폴더에 검증·복원하고 기존 회사 GitLab 최신 코드와 비교해 변경을 병합한다. 전체 덮어쓰지 않는다.
+2. 개인 H-Chat CLI 인증, 회사 CA/프록시, 기존 빌드 진입점과 파일 잠금 대응을 보존한다. 필요한 의존성이 이미 있으면 재설치하지 않는다.
+3. 타입/i18n/관련 테스트와 앱 빌드를 실행한 뒤 새 빌드로 앱을 다시 실행한다. 이전 설치 EXE는 소스 수정만으로 갱신되지 않는다.
+4. 도구 화면에서 기존 잘못된 MCP의 command/args 보정 여부를 확인하고 개인 Claude 구성을 원클릭 가져와 연결 검사한다.
+5. 시험용 세션의 삭제 취소/확인, 보관/복원, 항상 보이는 톱니바퀴, 팀원 확인창, 한국어 스킬 설명/검색과 /sm-atlas-config 표시를 확인한다.
+6. 개인 PAT와 읽기 허용된 컨플 루트로 문서 조회를 확인하고 승인된 시험 페이지에서만 생성/섹션 수정을 시험한다.
+   이 command 파싱 수정이 회사 TLS/권한을 대신 해결했다거나 실제 회사 연결을 집에서 검증했다는 뜻은 아니다.
+
+이번 수정에서 먼저 비교할 파일
+packages/desktop/src/common/platform/mcp/
+packages/desktop/src/common/chat/slash/
+packages/desktop/src/common/config/storage.ts
+packages/desktop/src/renderer/hooks/mcp/
+packages/desktop/src/renderer/pages/settings/ToolsSettings/
+packages/desktop/src/renderer/pages/settings/components/OneClickImportModal.tsx
+packages/desktop/src/renderer/pages/settings/components/JsonImportModal.tsx
+packages/desktop/src/renderer/pages/settings/SkillsSettings/
+packages/desktop/src/renderer/pages/conversation/GroupedHistory/
+packages/desktop/src/renderer/pages/conversation/platforms/acp/AcpSendBox.tsx
+packages/desktop/src/renderer/pages/conversation/platforms/aionrs/AionrsSendBox.tsx
+packages/desktop/src/renderer/components/chat/SendBox/index.tsx
+packages/desktop/src/renderer/pages/guid/GuidPage.tsx
+packages/desktop/src/renderer/pages/guid/hooks/useGuidSend.ts
+packages/desktop/src/renderer/pages/team/TeamPage.tsx
+packages/desktop/src/renderer/services/i18n/locales/
+packages/desktop/src/process/services/confluence/
+tests/unit/settings/mcpJsonImport.test.ts
+tests/unit/chat/mergeSlashCommands.test.ts
+tests/unit/renderer/mcpImport.dom.test.tsx
+tests/unit/feedback/McpServerHeaderFeedback.dom.test.tsx
+tests/unit/renderer/hooks/mcpCatalog.dom.test.ts
+tests/unit/renderer/useMcpConnection.dom.test.ts
+tests/unit/renderer/useGuidSend.dom.test.ts
+tests/unit/renderer/conversation/ConversationRowCronMenu.dom.test.tsx
+tests/unit/renderer/conversation/useConversationActionsCron.dom.test.ts
+tests/unit/renderer/team/TeamPageWarmup.dom.test.tsx
+tests/unit/skills/SkillsHubSettings.dom.test.tsx
+tests/e2e/cases/smatlas/atlasPolish.e2e.ts
+tests/e2e/cases/smatlas/confluence.e2e.ts
+docs/guides/sm-atlas-company-environment.md
+
+이번 최신 로컬 검증 결과 — 2026-10-12
+- TypeScript 검사, 13개 언어 i18n 검사 및 이번 수정 파일 lint 오류 0개 확인. Electron main/preload/renderer 빌드 완료.
+- 실제 Electron + 번들 AionCore에서 원클릭 가져온 MCP 자식 실행, command/args 저장, hover 없는 설정 버튼,
+  기본 스킬 한국어 표시/검색, 세션 삭제 취소/확인 및 실제 프로젝트 폴더 보존을 확인했다.
+- 전체 회귀 검사: 536개 파일, 5,162개 통과, 실패 0개, 기존 건너뜀 6개.
+  이후 마무리한 한국어 스킬 검색은 별도 3개 파일 49개 집중 검사 전부 통과했다.
+  전체 실행 숫자에 이후 추가한 검색 테스트 1개가 포함됐다고 주장하지 않는다.
+- 실제 Electron 화면에서 컨플 오프라인 연결/트리/본문/참고자료/하위 생성/섹션 수정 및 프로젝트별 세션 독립 저장도 재검증했다.
+  최종 일괄 실행: MCP/화면/삭제, 컨플 문서 기능, 프로젝트/세션의 3개 시나리오 모두 통과(1.2분).
+- TXT 복원 도구 자체 테스트 8개 통과. 전달본은 생성 후 별도 폴더로 복원해 원본 바이트와 비교 검증한다.
+- 회사 네트워크/실제 PAT/H-Chat 모델 요청은 시험하지 않았다. 홈의 시험 프로필만 사용했다.
+
+아래는 이전 컨플루언스 기능과 환경 기준이다. 이번 수정에서 그 기능을 제거하거나 UI를 다시 작성하지 않는다.
 
 이번에 회사에서 이어서 할 일 — 먼저 읽기
 컨플루언스 화면과 Electron MCP 커넥터는 집에서 1차 구현했다. 회사에서 UI를 처음부터 다시 만드는 요청이 아니다.
@@ -7,7 +80,7 @@ TXT 작성일: 2026-10-10 / 최신 구현·검증일: 2026-10-10 / 제품 버전
 회사에서 실제 응답 형식이 다르면 커넥터의 해당 부분을 보완한다. 회사 CA/프록시/개인 H-Chat CLI 설정과 기존 작업은 보존한다.
 현재 상태는 "코드 구현 및 로컬 오프라인 MCP 검증 완료 / 실제 회사 MCP 및 모델 왕복은 현장 확인 필요"이다.
 이 전달은 전체 소스 스냅샷 TXT이며, 설치 EXE나 회사의 최신 소스를 이미 병합한 결과가 아니다.
-이전 공개 전달 f78abcf(2026-10-08)와 비교해 소스 60개 파일이 추가/변경됐고 삭제된 파일은 없다.
+2026-10-10 전달 당시에는 f78abcf(2026-10-08)와 비교해 소스 60개 파일이 추가/변경됐고 삭제된 파일은 없었다.
 컨플 변경 외에도 이전 세션의 CLI 버전 info 안내 정리 변경이 함께 포함돼 있다. 기존 프로젝트/스킬/설치기 소스는 유지한다.
 
 컨플루언스 구현 — 2026-10-10
