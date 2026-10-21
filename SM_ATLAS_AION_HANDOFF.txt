@@ -1,5 +1,14 @@
-SM ATLAS — 데스크톱 펫 완전 제거 및 기존 MCP 수정 포함 소스 전달
-TXT 작성일: 2026-10-20 / 최신 구현·검증일: 2026-10-20 / 제품 버전: 0.1.0
+SM ATLAS — 회사 MCP 가져오기 상태 판정 수정 및 데스크톱 펫 제거 포함 소스 전달
+TXT 작성일: 2026-10-21 / 최신 구현·검증일: 2026-10-21 / 제품 버전: 0.1.0
+
+이번 추가 수정 — 2026-10-21
+- 회사에서 Claude CLI의 Atlassian MCP가 연결되어 있는데도 Atlas 원클릭 가져오기가 지원 불가로 표시되는 수정 보고서를 반영했다.
+- 스캔 응답이 importable=false, import_skip_reason='√ Connected'인 경우 기존 접두 문자 정규식에 √(U+221A)가 없어 연결 성공을 인식하지 못했다.
+- packages/desktop/src/renderer/pages/settings/components/OneClickImportModal.tsx에서 √도 제거하도록 보정했다. URL·PAT·개인 CLI 설정은 변경하지 않았다.
+- tests/unit/renderer/mcpImport.dom.test.tsx에 Connected, √ Connected, ✓ Connected, ✔ Connected 가져오기와 연결 끊김·인증 필요·플러그인 관리·사유 없음 차단 검사를 추가했다.
+- 로컬에서 수정 전에는 √ Connected 사례만 실패했고, 수정 후 관련 12개 및 전체 5,166개 테스트가 통과했다. 실패 0개, 기존 건너뜀 6개이다.
+- TypeScript, i18n, 변경 파일 lint와 포맷 검사도 통과했다. 실제 회사 서버에 새로 접속하거나 MCP 도구를 호출한 검증은 아니다.
+- 이 변경은 현재 작업 소스와 아래 공개 TXT 스냅샷에 포함된다. 펫 제거 커밋 번호를 이 추가 수정의 소스 커밋 번호로 혼동하지 않는다.
 
 이번 추가 수정 — 2026-10-20
 - 데스크톱 펫 기능을 완전히 제거했다. 설정·트레이 메뉴, 앱 시작/종료 처리, 이벤트 전달 훅, 전용 창과 IPC,
