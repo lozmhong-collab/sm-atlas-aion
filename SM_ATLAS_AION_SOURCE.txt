@@ -1,10 +1,20 @@
 SM ATLAS — PLAIN TEXT FULL SOURCE BUNDLE
 Bundle format version: 2 / Encoding: UTF-8 / Integrity: exact bytes + SHA-256
-Generated: 2026-10-21T02:21:09.213Z
+Generated: 2026-10-21T02:32:46.627Z
 Files: 2360; readable UTF-8: 2311; Base64 assets: 49
 
-SM ATLAS — 회사 MCP 가져오기 상태 판정 수정 및 데스크톱 펫 제거 포함 소스 전달
+SM ATLAS — 회사 MCP·컨플 연결 호환성 수정 및 데스크톱 펫 제거 포함 소스 전달
 TXT 작성일: 2026-10-21 / 최신 구현·검증일: 2026-10-21 / 제품 버전: 0.1.0
+
+이번 추가 수정 — 2026-10-21 (컨플 연결)
+- 회사에서 정상 동작하는 MCP가 Atlas의 TLS 사전 검사에 막히는 문제를 해결했다.
+- McpClient.ts에서 --no-confluence-ssl-verify, --no-jira-ssl-verify와 TLS 검증 환경변수를 이유로 실행 전에 거부하던 조건을 제거했다.
+- 등록된 MCP의 실행 파일·인자·환경변수·CA·프록시 설정을 그대로 사용한다. 새로운 TLS 비활성화 옵션을 자동 추가하지 않는다.
+- 사용하지 않는 unsafeTls 오류 코드와 13개 언어의 차단 메시지를 제거했다. 아래 과거 연결 안내도 현재 동작에 맞게 갱신했다.
+- 실제 stdio 자식 프로세스의 설정 전달, 연결, 루트 페이지 조회, 프로젝트 연결 저장을 포함해 관련 90개 테스트가 통과했다.
+- 최종 전체 회귀 검사는 5,169개 통과·실패 0개·기존 6개 건너뜀이다. TypeScript·i18n·lint·포맷·앱 빌드도 통과했다.
+- 새 Electron 빌드와 번들 AionCore에서 기존 TLS 인자·환경변수를 가진 로컬 MCP로 연결 확인 후 저장, 루트 조회 및 새로고침 후 복원을 확인했다. 실제 회사 서버·모델 요청은 하지 않았다.
+- 회사 설치 EXE는 이 소스를 반영해 다시 빌드해야 한다. GitHub TXT 갱신만으로 이전 설치 앱이 자동 갱신되지 않는다.
 
 이번 추가 수정 — 2026-10-21
 - 회사에서 Claude CLI의 Atlassian MCP가 연결되어 있는데도 Atlas 원클릭 가져오기가 지원 불가로 표시되는 수정 보고서를 반영했다.
@@ -204,9 +214,9 @@ docs/guides/sm-atlas-company-environment.md
 1. TXT를 새 폴더에 검증·복원하고 회사 최신 코드와 비교해 컨플 변경을 반영한다. 아래 파일 목록과 가이드를 참고한다.
 2. 기존 회사 빌드 환경과 캐시를 사용해 타입·번역·관련 테스트와 앱 빌드를 확인한다. 필요 없이 Bun/런타임을 재설치하지 않는다.
 3. 설정 → 도구에서 개인 uvx.exe → mcp-atlassian stdio MCP를 등록한다. PAT는 개인 설정에만 넣고 출력/공개 Git에 넣지 않는다.
-4. 사진의 --no-confluence-ssl-verify / --no-jira-ssl-verify를 그대로 전달하지 않는다. 이 새 커넥터는 TLS 검증 비활성화를 거부한다.
-   승인된 회사 CA로 Python/uv의 REQUESTS_CA_BUNDLE, SSL_CERT_FILE 및 필요 시 승인된 UV_NATIVE_TLS를 설정한다.
-   기존 Electron 빌드의 NODE_EXTRA_CA_CERTS만으로 Python MCP의 인증서 신뢰가 구성된다고 가정하지 않는다.
+4. 회사에서 정상 동작하는 MCP의 실행 인자와 환경변수를 그대로 사용한다. TLS 옵션만으로 Atlas가 사전 차단하지 않는다.
+   기존 CA·프록시·REQUESTS_CA_BUNDLE·SSL_CERT_FILE·UV_NATIVE_TLS 설정도 보존한다.
+   Electron 빌드와 Python MCP의 인증서 신뢰 설정은 각각 해당 런타임에 적용된다.
 5. 읽기 권한이 있는 루트 페이지 URL로 연결 → 트리 펼치기 → 본문 조회 → 검색 → 현재 세션 참고를 확인한다.
 6. 실제 개인 H-Chat로 연결된 Claude/Codex에 참고자료를 보내 답변과 도구 사용을 확인한다. H-Chat 키와 컨플 PAT는 별개다.
 7. 승인된 테스트 문서에서 AI 초안 요청 → 답변 가져오기 → 직접 확인 → 하위 생성/섹션 수정 → 재조회로 결과를 확인한다.
@@ -477,7 +487,7 @@ SM_ATLAS_AION_SOURCE.txt의 내장 복원 도구로 --verify/--list 후 새 폴�
 화면을 처음부터 재구현하지 말고 기존 회사 CLI/H-Chat/CA/프록시/빌드 설정과 현재 다른 세션의 수정은 보존해 줘.
 회사에서 사용하는 개인 uvx/mcp-atlassian stdio 서버와 실제 루트 URL을 연결해서 읽기부터 시험하고,
 승인된 테스트 문서에서 Claude/Codex 참고 업무, 하위 생성, 특정 섹션 수정, 다른 섹션 보존, 서버 재조회 및 동시 변경을 확인해 줘.
-Python/uv가 승인된 회사 CA를 신뢰하도록 구성해 줘. 이번 커넥터는 기존 ssl-verify 비활성 플래그를 거부한다.
+회사에서 정상 동작하는 MCP의 기존 실행 인자·환경변수·CA·프록시 설정을 그대로 사용해 줘. ssl-verify 설정만으로 연결을 차단하지 않는다.
 도구 입력/응답이 실제 패키지와 다르면 Electron ConfluenceService/McpClient/codec에 필요한 수정만 해 줘.
 실제 오류나 응답 차이가 없는 항목까지 모두 질문으로 멈추지 말고 반영·빌드·실행·검증을 먼저 진행해 줘.
 PAT/H-Chat 키나 사용자별 설정을 공개 Git에 올리지 말고 결과는 성공·실패·회사에서만 확인된 한계로 구분해서 보고해 줘.
@@ -1052,7 +1062,7 @@ e556c55da67b33737f2aaa130ed711158360a2abfe36ffba4c5063b22e8ffc6d  sm-atlas-aion/
 9e3fb67bb4eb0501e14c7f3b402358c88e1f7466c91165887e8f91c087fcc7fe  sm-atlas-aion/docs/guides/custom-theme.md
 b8119c328bcbefa4523902e7d05d943d78c2a85d488d2f74857bfba74dbe25ce  sm-atlas-aion/docs/guides/deploy-server.md
 789c5576e766b97981be78775e5bb9051537f343d1768c05685f96adfd0cfcb0  sm-atlas-aion/docs/guides/hub-testing.md
-1b423c440e775e621fc618dfb9283d00ed486557e9360c1d998569e24a175c2e  sm-atlas-aion/docs/guides/sm-atlas-company-environment.md
+29b2a2f0e9ce19c938fd4052c93b3e6a39857e1936defba7d05ddcd06631fe05  sm-atlas-aion/docs/guides/sm-atlas-company-environment.md
 15ad861d02f616bcebc5979f59b96449672085a444b935b72897edcaaeca2407  sm-atlas-aion/docs/guides/webui.md
 29b583053c00fa0783a3458b7904fe3d75ff62a7818273a92f2d8a4820ce6bea  sm-atlas-aion/docs/prds/agent-browser/prd.md
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  sm-atlas-aion/docs/prds/assistants/README.md
@@ -1344,7 +1354,7 @@ f38301db9107243f1fd67959eec89ae54306f36eb3d6ef2ed3ef373b97b8db13  sm-atlas-aion/
 c3573c9adc4cb6d0c6557d09ed0aa32eec9ef6b72578f54b5ce5cd84d7fce3a9  sm-atlas-aion/packages/desktop/src/common/platform/companyEnvironment.ts
 d0aca1ffc5f355c3259d01f1b81c04e0980684b7846f23e27fc358505b31b942  sm-atlas-aion/packages/desktop/src/common/platform/confluence/context.ts
 4c5daba19b6c34d5ff72904706c5364837a6b95090a75270387348a1d5b06b6d  sm-atlas-aion/packages/desktop/src/common/platform/confluence/model.ts
-062b22751b50ae56fa5e4060e5c56de840a0df4703fec68563351fe9cf448da5  sm-atlas-aion/packages/desktop/src/common/platform/confluence/types.ts
+3e528e5abe7212c852b9411653c985037e02e4cf71a6c9d60fcc86a913390932  sm-atlas-aion/packages/desktop/src/common/platform/confluence/types.ts
 33711af6eb4befc3fcb8aa49a8b835bdcc3737284cef39cd652e661d3c156e88  sm-atlas-aion/packages/desktop/src/common/platform/index.ts
 b67d0f7a30af48d6380f87aaf55801686f4b77c0e313093b527b2e304d881f45  sm-atlas-aion/packages/desktop/src/common/platform/mcp/index.ts
 c8c92fe0ecb38b65d4fb3c10f819deb432071237db5c2010d804731eaeeb8cbb  sm-atlas-aion/packages/desktop/src/common/platform/mcp/redaction.ts
@@ -1420,7 +1430,7 @@ ab0295c7f01d93e07fd8cd49059a8fb5df927e7e2de29d9152e845a93b6477d6  sm-atlas-aion/
 1194381f2fae0796b3ad8c234746177e191cf1c561378796ab816a51d731ec71  sm-atlas-aion/packages/desktop/src/process/services/autoUpdaterService.ts
 9c277e8caa6f5b9151c625c66e16a1d7d130ce89c0573a77160726e76b4c2a25  sm-atlas-aion/packages/desktop/src/process/services/cdnGenericProvider.ts
 4d94185d54176283477143774c4ec63b6eaacc3e161a8d9be1efed2cd2f872cb  sm-atlas-aion/packages/desktop/src/process/services/confluence/ConfluenceService.ts
-da806d076b7f32c94aae956967ed4eeca7d3e10a7053e020a7afd692bb4fa052  sm-atlas-aion/packages/desktop/src/process/services/confluence/McpClient.ts
+be8c6801b1d56ab104f0cbb7516a23bd45d9b920827eb2ef3601bae051634f13  sm-atlas-aion/packages/desktop/src/process/services/confluence/McpClient.ts
 ba42c72cd8788311f85e48abf0b927a23b600705703efaf7f7790d70d6e55c84  sm-atlas-aion/packages/desktop/src/process/services/confluence/codec.ts
 e8d36eeb12899f3434195519b9fc31949105fff8554952aa1ba978fdf3461db2  sm-atlas-aion/packages/desktop/src/process/services/confluence/demoServer.ts
 30f68efec403019c69e6f6074dc5ca5a10476b23c043b2adca7e2cb2bd582191  sm-atlas-aion/packages/desktop/src/process/services/confluence/index.ts
@@ -2105,7 +2115,7 @@ a2337aa1c89aca75a131de645b2df8f20b906b7c39af8804f9818591765df497  sm-atlas-aion/
 31e3e82773ef10b0bfddbd44166e4709d3b7bf2f154fab0d3e083960b095c258  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/README.md
 b6af68992365adb2e427ec0231d90c541c86e8c529059270ccbbb0beac760bd5  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/direction.ts
 7b48f17ceb80af8f44c61fe7d8b278586425e46b07abdeeac98d64d51a9577af  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/format.ts
-9a68b0405fdcdd0f7c36c28ae8a983f3e12d0759fb5e7d810102b7205f234272  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/i18n-keys.d.ts
+2c04f54300b6fa297da0c0d2a00e192ebfb3bd8ac1bb6a265bcb98fa70448045  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/i18n-keys.d.ts
 a93bdee1929cc664454301f0d4e7a7588cc5a2780ec3103bf9ac0b6bef761fe9  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/index.ts
 682a0b6ff592d2cffee3eb5f8b48e41fa7848b85fa5523babb342d328d6ffd17  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/list.ts
 de861393edfdf74de02f46afca0fb6c5bfd12fcb6bfcdffcd83f58f50ccb4cdd  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/acp.json
@@ -2113,7 +2123,7 @@ de861393edfdf74de02f46afca0fb6c5bfd12fcb6bfcdffcd83f58f50ccb4cdd  sm-atlas-aion/
 080e43ed108b5e766babf59ee874bca3ba828917ce9811ce85aa0d3a5020a82b  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/agentMode.json
 6ee0ca513531ff4c31ee8d6d7c2cccd265236288569c91b8ab4370613fc9f3e8  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/codex.json
 5a04a65a80b5dc61133582026d6cd8fea6c77cb3fec6febcf937ba3d58023546  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/common.json
-c31c12b887c38e7fe66664bfdd5d39a1918e9af0cedba4b8cfa5f6d94777977b  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/conversation.json
+263a6e478f89b2c8dfceedb0d5cbbe2adbb0ec300d5fd7269e60823502d073e2  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/conversation.json
 f3e04f52a1c66ffafe63e379337129da54937727c30f8df9e40e5965f5d57393  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/cron.json
 3fa0c0da81ef50e48663353cbaf28b73ed392b1066d5730b2516b46081bf6f47  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/fileSelection.json
 53d0535bac0b36fd674c615019426cb32b6e117794b07e154e9c09910e4af509  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/google.json
@@ -2132,7 +2142,7 @@ d5b91107534814e1643065dea8c5146dce82cb3128567593d9c5cc98f3ab3c74  sm-atlas-aion/
 8041a6c4cebd980c6254505332227d22407ce5bf91dcf0ab80fc1a58fce03f4f  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/agentMode.json
 9e8ee00afac57eece9a711b73634ac3b92b237c93946ca678f1828862434edbe  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/codex.json
 74a9e0229cde441df117c254aa0b465d0d3e62c3535c72726eda2a1e1f44595c  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/common.json
-0fb3eb09c1c2225d7f81b39dcca7cd831b7f8826b84688513bbaf626b747209c  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/conversation.json
+a67523da4aa70f4af54bc1e901da4fbdabccda6185b06ddb79290cd110fda353  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/conversation.json
 7fa7e9b1abda21084cec79127ba138ddb855f406297d920211f6c73ac3effcb3  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/cron.json
 2d07412278037ef5ab35699e7c3b138397ab82bbdaed21f07f1bc1eb2a399b04  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/fileSelection.json
 79fb5cb3e8c9d97e28d72fa073d9482c031f49196297815fbfb5d85ed86e9a16  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/google.json
@@ -2151,7 +2161,7 @@ cb399a0e7d8d5c3a7a62e32982f212822d46369f30a161490da6017ee3bb1441  sm-atlas-aion/
 d5b59b4a917015e2a728cd833bce5a166573ac701b04a6e9ea35f44495e7465d  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/agentMode.json
 e0063f51539f2deff2fb8ba13013038827e3df52692e5a2338119d7231bd4243  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/codex.json
 dd03e21619f22056ad6dc5cc4892e1818bda8a56e11fa4e66c701041cea3d7e2  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/common.json
-2c59e88ebb4315b0d30a07f62b6c35c277df897273d36028c3057db1cf58f983  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/conversation.json
+766833d2906edc770eaf5162de1a90f7e3ecacb9700059b0207c95bc249a606f  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/conversation.json
 e58e1d7a2ac0df8eca5eddb3de4fe1a478f66cd57246df14f220d4c5f7bbbd7a  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/cron.json
 982451a596d3fa018713a8378c3009d2bcdad0f80bcbad64689579c51b81a427  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/fileSelection.json
 39fb158303cfb2fd6d5cff56279699612c97835e0b7812bc5addecde76e6ca02  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/google.json
@@ -2170,7 +2180,7 @@ c769428c4a79975f260278529dbbc9b9825a044d08a873d3a296536e4a1a8cf0  sm-atlas-aion/
 4c0a58042844634542a1ee72c3568524a1c96262b1482185e3c3e4efadc8e88c  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/agentMode.json
 8b4a0cbde7326eefb4519deda598a4a8d95f3dd00439c8a65350b5b09d2026cf  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/codex.json
 1611abf607ebe4cb04b3fa3fe57f9ea7433b33fbe48b483bf83eff3a9b14bde3  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/common.json
-7c3a1a75a7144c8bae81eae562aff283f7d210a47162b6f8d1cd9e87d4743f09  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/conversation.json
+b4be8864bd520163e7cb1a46fc056e655e9ae905f21ff5474133f14763671693  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/conversation.json
 9433f1da868f6829ccf4f88a67af523a85a7c2e8f8074bd5d886a4d43d972b88  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/cron.json
 ad9723284fa785ec9208910d765f1b298db6ff3b076e060b55818da49158a17d  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/fileSelection.json
 1fcfd4b9b22e7028c9764ac408879f58b71ac80c0a966c2e07fe10454b1f17f5  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/google.json
@@ -2189,7 +2199,7 @@ ff6835f21173fc16bc2f253141b1238a6177ecaa494b688c4df730e3de8e3297  sm-atlas-aion/
 471ffae4c09ed26e251f99c6e9e4eae32ec06c42320b08b18b6ba60fd1cba7b0  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/agentMode.json
 f7f445b5821bc027c9f6b6673a3483ad8b0b6cd716a44251b410b8d4eb31ec77  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/codex.json
 6dc3839fdf5b7ffb19a47bce9b479687ddaa28e7810bcfb43564f6d888f2d0c4  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/common.json
-45ff7b864c181185974492553c2455e9ed97dff6c927ecb980efd11445bf1c45  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/conversation.json
+4efd6bdd87f2303a8df3444dfded75b53bfab1f57f23574c247d16f42b63a3ea  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/conversation.json
 724c1a394451e4a126ad43cf7fb880615d593dfae5519715786368ff407c2588  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/cron.json
 0934c5b49355e94639e23127585f5278f2b3174670701f65227b2cac052b888c  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/fileSelection.json
 1cd6044c7342a7c6e259f8d056a4b7e345b40e7e391ff0fe3ac877d6daf2713b  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/google.json
@@ -2208,7 +2218,7 @@ fe5224439316cc19b66bc3a4c2ffdc047fd609420170d2e5fdee1d9311e7f106  sm-atlas-aion/
 8309369a7c0cf828bb291d463986887e1e0ddc2e835274927f834ee423cfb189  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/agentMode.json
 8d104cef570d3b23302ae2f297871c13c1c30ebc93badfc8a30fba61c9a09ef9  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/codex.json
 a817a18c14fe64ce7fd3e25b731cc1d7b9141ffbc97437ddfb6c61946594bce8  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/common.json
-6184579fa82904f813c2c041ec74f330924d70390493ca17b999e8d0a674237b  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/conversation.json
+1f870bb5c307c7a4fd6d165b70be28c1a173d7543ef5e1d4a9a8fca234810426  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/conversation.json
 2ceaf42d14d18d66c32d83a6e881851edf8e8ad40eb54267b2220f439e86975f  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/cron.json
 b33b5c8f206dd3523ddb04074046d41d311f551b1859c7add81f065f7149e33e  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/fileSelection.json
 d0dae324d17c79d07e3713396529f4a5e16caf6b14a7ecc1e850af97e8cdfdf5  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/google.json
@@ -2227,7 +2237,7 @@ e9916c6c9b3ed4f27877a24ea0f7991b92bbb3c74c5a0fc0fcd96a8acde2e921  sm-atlas-aion/
 fd933b0a2439c7ea4bfe780bad5f01894341aa1bbdbe13ad70df8d4096ac93a5  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/agentMode.json
 3bce00f39325a59d17b64785aaeaa3937d648eb7c9d219b84d923f872e35b004  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/codex.json
 2e2cf2b442467dddb98a4ddf45b9cea31d2abbc41a13e3b8b8793d90d8f65120  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/common.json
-4666aef6faf6ac3a24b1f27b006199595b5459270e88d5e990444ecf657c5d6a  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/conversation.json
+eb43ed70ca2058f677e846e607b808881e7a13ba2a3592d1a6e3f2f28a035bf9  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/conversation.json
 5f3e23334448dda1bcc2fb7ada0dbd5ef979ac2e74e9d80047b1f96d4cedccb1  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/cron.json
 fe36e5c7de540a2e65b62b537d77c3d2aa31121ee41847fbe2f8a2f980140db8  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/fileSelection.json
 bf2050a1b4d57cf17c2c36148fae28dd0ea668f661e8a43307fd856bdcc3bbdb  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/google.json
@@ -2246,7 +2256,7 @@ c0809be1603bcbef1ec46281ff39a5fa89621af48b0537f3953a652883df66d9  sm-atlas-aion/
 559008d9977ac233f15609394698a180eda06b0bc4e43ffbd064b17d6d5e220c  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/agentMode.json
 5d019da4303a59cebf726a825d7c9bc9d42634fd6179665cfadcab24431e8b7c  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/codex.json
 b26e3877215b80bf81bd5fb2f147de99067218cb785ec82c30ab40e24812e65a  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/common.json
-2678f9af935e8917a88152f107a31407264775721c98e52ba7eb48cd6a70115f  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/conversation.json
+b42646ca83a5cc35eacae76017fe31890c14b589d26620d898ff9c7182fbf638  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/conversation.json
 3184d417eb66f8440eca2720d89a1352fce7a438ef739606eca6024e2b00c587  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/cron.json
 50815b2286642426830e92f47e48cb78bfe68fe9059dbfb4a06274c577bbe364  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/fileSelection.json
 a1fe200366cda5f5d847fc9899fe857a941333b316da2a0168087baaa8e386f5  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/google.json
@@ -2265,7 +2275,7 @@ f2515737f86f4d2fb4384421474261ad7529649a6282f64e85958a6a690e28a5  sm-atlas-aion/
 6f44e3409cd70146b942108132ad5bcb1510bf5dbf07eb1f022a90075a922054  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/agentMode.json
 708f6f84e315a1366459821a8f9946bcb02b4c42a048132545da499600cd07fb  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/codex.json
 797930f3a4701135640f882153867525a4bd66431de67983fe45ac9dfecb66cc  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/common.json
-78df566cd8b437a6c43f93866b53aa635ee7a1457ea88ea8f9b677e2c31baf74  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/conversation.json
+f75a13f69e8c56ce01b6a42402394c6d4b86df78ae0d04b722c7edb2f16d4f27  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/conversation.json
 b2440b947cd92a933b90d4d102892f6a055f8acba3349ea60366f60ea1dad8af  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/cron.json
 dffb51343319230d0fdd0de9b3b7cf0419221838ecd40da0e929ef390f7b8e31  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/fileSelection.json
 cc9a556e030c7d68aa9a7a20a810cfcc71cca23c22d9eeef0a391508698fa1fa  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/google.json
@@ -2284,7 +2294,7 @@ ff6352bb85485724b2b80e25c1531d756c7c253b3ba39986d24b3c43e9177783  sm-atlas-aion/
 b19906f4ec2ba0c125cac86cd638a7d3d57034bb66a69c1124d2603025d118cb  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/agentMode.json
 066f1de88a18d900efe3bc844576486e166d4253f4d003a42b31ff46b804e7cb  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/codex.json
 17401af5d4b6a51709567ab921465a1c9ea02eb23ca7cc7f740132145a7473bf  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/common.json
-f1cb19ca46ebc5518e430b6b75bc55b0a49838552fcdccb22c3eb79bc5e9108b  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/conversation.json
+11fd4e1a6f00d43758f40c69544c699a11a203ec77a4bcfe5dd16ae63f6a3e15  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/conversation.json
 7b745474e4b928cd042421e8de66b6818749fc05ee923725d416fec986dabaac  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/cron.json
 9d3658d7a0b72803057ba4a691075846b2f2f3e4c8587de2eb44c55dc7377300  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/fileSelection.json
 0814c5d86f95fd03906d6aaa0622cf45ee224701d50bdcc404b556b5cb30193a  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/google.json
@@ -2303,7 +2313,7 @@ cea7ff752c38e64f6b1e9d92e89cc066ba1cbd41833d834a5ae54eebbc64a9ff  sm-atlas-aion/
 8946ecdec6a4de15125381a2525223b0ce7b8b3090426eeb28f42dd07bcae3e7  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/agentMode.json
 6fef10d06a810f16ea7dd27f32884164829c1b78e2a6af7111d92623e554a9a8  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/codex.json
 3b3b48d570bb46b7de737959652b2c9d547728749f36ed9282cda0a31016bd5b  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/common.json
-7b6919da1599e4c8828b04e63d95e1db62f290deb5b51b3d76fa413c3a53bfbe  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/conversation.json
+d5b16a007e8d5f49e37709af0e28edfd29d689d6b0fca944e0ee24ef53d8d3e8  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/conversation.json
 79c3cc78d78836e9701de3e8cc1259e54e9d6f305fdfbf318d24764b4a2be2a9  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/cron.json
 eeaef656419dcb80a6289c5b06b3530910452da179708852286179b4e3732f7a  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/fileSelection.json
 cf9e6db1ae44a2a633cb915fe36a4360986345f18eeaddbd9250f6aa0dafc16f  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/google.json
@@ -2322,7 +2332,7 @@ b7776ff9e11a5fcef295d87d32a67d63c4056d19a6b02487b174e3859f95ff85  sm-atlas-aion/
 f2cb6d0523a81b421035e80ef694f635ad9eeb00c2e27c9989634520ce506fd5  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/agentMode.json
 9644d01eab4b54efe62c5ba5e4b8dc7110eff7a3a6455b5ae764fcc6ccdc0582  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/codex.json
 f1d1d237006bda83e1b3c556954f78573b60b23f676c6d027bbdd74a49a628ab  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/common.json
-0b08a2f1a2cbd36a1cf04fdfb6aa921846d28d5c2401a46ec5bc8b051d2bc82c  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/conversation.json
+add0bfce4205a5b33bd0ca2a21da9257dfd66d567a7facc4829c561e82f932cd  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/conversation.json
 fdf18e3c548c04294d8ebdc65e7958ccfbf53db4b0ebb4446e0b11ed893541cf  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/cron.json
 493fbc3e478020e9c7acdc7e6e3a40956ec4c53f969de495921fd810a4c2ace5  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/fileSelection.json
 fd6e8c95275672ca041101b34925994945559db199c32f9a1be137fe2df6833a  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/google.json
@@ -2341,7 +2351,7 @@ a22bd80fbb55a882ffb3adfd8000555462b769352ad78ddc687f727e65a6b808  sm-atlas-aion/
 0088db684828e518465bb56b6947cef018582849dc426005017c7bbf2406ae86  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/agentMode.json
 2dc81e083fbecbf2ea0957ab057c4103ffb2ef55cbba897980c76f818abe76d3  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/codex.json
 4e681e2d48bb4d8352e56e15d796d5a89fb2b7e4ae854e935add6555cf848029  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/common.json
-3028776ceea334e1442e110534c48b87d669d950f4aa13949866266501690718  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/conversation.json
+de8bfe45696ff92212922758b4abde68952a1faccf8c47e9fdea567a890fd801  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/conversation.json
 f3cf3a08c3c8a2ab6a3487b31111b0ee2d7877c7771642473e384d98ac850891  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/cron.json
 eab201d4255984f475372e3893ea723751a2d090935574fc7364439ee0d7b33f  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/fileSelection.json
 a995e7fe5b165296213490ec4b99f00299cb2994ec7702b01cfd6accc5f01fb7  sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/google.json
@@ -3003,7 +3013,7 @@ ebc03be30b06936e29974093ad1d097687a2c501a92de589ab768499653466b3  sm-atlas-aion/
 9fecbe572258b1cf828ac0286707a37a1d8161a5c7eb3d49e91667ccdb3c7e1f  sm-atlas-aion/tests/unit/process/services/cdnUpdateFeed.test.ts
 6d868988ddd28c4def4f7e50dd0715920ca0843befc364f703818a4868d6d3b7  sm-atlas-aion/tests/unit/process/services/companyEnvironmentService.test.ts
 aa275bc7b5d3fa836822a2e39da7da0b24c99d8d583523dedc8201bf638dabf4  sm-atlas-aion/tests/unit/process/services/confluenceCodec.test.ts
-89295c34daefdd33089f02cfc22c2f65bca04e3da84e0eb06ae6016009d24168  sm-atlas-aion/tests/unit/process/services/confluenceMcp.test.ts
+1dbf9cc0dfcbcf4ec1f7f2a450faec1eeac87aaddf09268c6809ada0a34978ee  sm-atlas-aion/tests/unit/process/services/confluenceMcp.test.ts
 400329c257d83f790f1e4381745eda49460171c53f60a8ea3858a8212f64f257  sm-atlas-aion/tests/unit/process/services/installerLastFailure.test.ts
 f8893e241e3579e73f8f410e79f93698ba49cbbfa6b55d477a03bb5968025b4f  sm-atlas-aion/tests/unit/process/startup/backendStartupFailure.test.ts
 3025058730d5a26faf857c9d6d5329574d769b024f3989d0c4210a5cc372864a  sm-atlas-aion/tests/unit/process/startup/companySkills.test.ts
@@ -20941,11 +20951,21 @@ bun run test:e2e
 
 FILE_END: sm-atlas-aion/docs/guides/hub-testing.md
 FILE_BEGIN: sm-atlas-aion/docs/guides/sm-atlas-company-environment.md
-FILE_METADATA: {"encoding":"utf8","originalBytes":50901,"payloadBytes":50901,"sha256":"1b423c440e775e621fc618dfb9283d00ed486557e9360c1d998569e24a175c2e"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":52931,"payloadBytes":52931,"sha256":"29b2a2f0e9ce19c938fd4052c93b3e6a39857e1936defba7d05ddcd06631fe05"}
 FILE_CONTENT_BEGIN
 # SM Atlas company environment readiness
 
 SM Atlas is a local Windows x64 desktop application focused on Claude Code and Codex, with the local backend pinned to version 0.2.2. Work is organized by project directory and independent sessions. The earlier prototype remains separate.
+
+## 컨플 연결에서 등록된 MCP 설정 그대로 사용 — 2026-10-21
+
+사용자가 회사에서 정상 동작하던 MCP로 컨플 연결을 저장할 때 Atlas의 `unsafeTls` 사전 검사에 막히는 문제를 보고했습니다. 등록된 MCP에 `--no-confluence-ssl-verify`, `--no-jira-ssl-verify` 또는 검증 비활성화 환경변수가 있으면 서버를 실행하기도 전에 거부하던 조건을 제거했습니다. 컨플 연결은 이제 등록된 MCP의 실행 파일, 인자 및 환경변수를 그대로 사용합니다. 별도의 TLS 옵션을 자동으로 추가하지 않으며, CA·프록시 설정도 그대로 전달합니다.
+
+더 이상 발생하지 않는 차단 오류 코드와 13개 언어의 메시지도 제거했습니다. 실제 stdio 자식 프로세스로 CLI 옵션, MCP 환경변수, Node 환경변수 및 검증 활성화 설정을 각각 전달해 연결·루트 페이지 조회·프로젝트 연결 저장을 확인했습니다. 인자나 환경변수가 바뀌면 자식 프로세스가 실패하도록 검사했으며, 관련 10개 파일의 90개 테스트가 통과했습니다. 이는 로컬 MCP 프로세스 검증이며 실제 회사 서버의 응답을 검증한 결과는 아닙니다.
+
+전체 회귀 검사는 5,169개 통과·실패 0개·기존 6개 건너뜀으로 완료했습니다. TypeScript, i18n, 변경 파일 lint·포맷과 앱 빌드도 통과했습니다. 새 빌드의 실제 Electron 앱과 번들 AionCore에서도 기존 TLS 옵션·환경변수를 가진 로컬 MCP를 등록하고, 컨플 **연결 확인 후 저장**, 루트 페이지 조회, 새로고침 후 연결 복원을 확인했습니다. 이 검사는 사용자 프로필과 분리했으며 회사 서버나 모델에는 요청하지 않았습니다.
+
+회사에 적용하려면 이 소스를 반영해 설치 EXE를 다시 빌드해야 합니다. 이미 설치된 이전 EXE는 GitHub 소스를 갱신해도 자동으로 바뀌지 않습니다.
 
 ## 회사 MCP 가져오기 판정 수정 반영 — 2026-10-21
 
@@ -21304,7 +21324,7 @@ Do not replace the existing prototype until a packaged SM Atlas build passes the
 ### 회사에서 남은 확인
 
 - 설정 → 도구에 회사에서 이미 사용 중인 `uvx.exe → mcp-atlassian` stdio 서버를 등록하고 프로젝트 루트와 연결합니다. PAT는 기존 개인 MCP 인증으로만 설정하며 H-Chat 키와 혼용하지 않습니다.
-- 받은 설정의 `--no-confluence-ssl-verify` / `--no-jira-ssl-verify`는 그대로 복사하지 않습니다. 이 커넥터는 검증 비활성화를 거부합니다. 회사에서 승인한 CA 파일로 Python/uv 신뢰 설정(`REQUESTS_CA_BUNDLE`, `SSL_CERT_FILE`, 필요 시 승인된 `UV_NATIVE_TLS`)을 구성해야 합니다. Electron 빌드의 `NODE_EXTRA_CA_CERTS`만으로 Python MCP의 TLS까지 검증되었다고 가정하지 않습니다.
+- 회사에서 정상 동작하는 MCP의 실행 인자와 환경변수를 그대로 사용합니다. `--no-confluence-ssl-verify` / `--no-jira-ssl-verify` 등 기존 TLS 설정만으로 Atlas가 사전 차단하지 않습니다. CA 파일을 사용하는 구성이라면 기존 `REQUESTS_CA_BUNDLE`, `SSL_CERT_FILE`, `UV_NATIVE_TLS` 등도 그대로 전달합니다. Electron 빌드의 `NODE_EXTRA_CA_CERTS`와 Python MCP의 인증서 신뢰 설정은 각각 해당 런타임에 적용됩니다.
 - 회사 패키지의 `tools/list` 실제 이름·입력·응답과 패키지 버전을 확인합니다. 서버는 `confluence_*` 또는 `mcp__atlassian__confluence_*` 접미사를 해석합니다. 페이지 응답의 `id`, `space`, `ancestors`, `version`, `content`가 실제 데이터로 전달되어야 합니다.
 - 읽기 권한이 있는 루트에서 조회·하위 목록·검색을 확인하고, 승인된 테스트 페이지에서 하위 문서 생성·섹션 수정·다른 사용자 동시 변경을 검증합니다. 운영 문서로 첫 쓰기 시험을 하지 않습니다.
 - 이 기능은 MCP를 통한 선택적 문서 조회/작성이며 벡터 검색, Teams 연동, 개인 키 강제 로그인 완성으로 표현하지 않습니다.
@@ -66973,7 +66993,7 @@ export function readConfluenceBindings(value: unknown): Record<string, Confluenc
 
 FILE_END: sm-atlas-aion/packages/desktop/src/common/platform/confluence/model.ts
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/common/platform/confluence/types.ts
-FILE_METADATA: {"encoding":"utf8","originalBytes":1956,"payloadBytes":1956,"sha256":"062b22751b50ae56fa5e4060e5c56de840a0df4703fec68563351fe9cf448da5"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":1940,"payloadBytes":1940,"sha256":"3e528e5abe7212c852b9411653c985037e02e4cf71a6c9d60fcc86a913390932"}
 FILE_CONTENT_BEGIN
 export const CONFLUENCE_DEMO_SERVER = '__atlas_confluence_demo__';
 export const CONFLUENCE_DEMO_ROOT = 'https://confluence.example.invalid/pages/viewpage.action?pageId=100';
@@ -67007,7 +67027,6 @@ export type ConfluenceErrorCode =
   | 'invalidRoot'
   | 'notConnected'
   | 'missingTool'
-  | 'unsafeTls'
   | 'outsideRoot'
   | 'changed'
   | 'notPage'
@@ -77539,7 +77558,7 @@ export class ConfluenceService {
 
 FILE_END: sm-atlas-aion/packages/desktop/src/process/services/confluence/ConfluenceService.ts
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/process/services/confluence/McpClient.ts
-FILE_METADATA: {"encoding":"utf8","originalBytes":3886,"payloadBytes":3886,"sha256":"da806d076b7f32c94aae956967ed4eeca7d3e10a7053e020a7afd692bb4fa052"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":3602,"payloadBytes":3602,"sha256":"be8c6801b1d56ab104f0cbb7516a23bd45d9b920827eb2ef3601bae051634f13"}
 FILE_CONTENT_BEGIN
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
@@ -77593,13 +77612,7 @@ export async function openConfluenceMcp(
   if (server && server.transport.type !== 'stdio') throw new ConfluenceError('notConnected');
   const normalized = server ? normalizeMcpTransport(server.transport) : undefined;
   const transportConfig = normalized?.type === 'stdio' ? normalized : undefined;
-  if (
-    transportConfig?.args?.some((arg) => /^--no-(?:confluence|jira)-ssl-verify(?:=|$)/.test(arg)) ||
-    /^(false|0)$/i.test(transportConfig?.env?.CONFLUENCE_SSL_VERIFY ?? '') ||
-    /^(false|0)$/i.test(transportConfig?.env?.JIRA_SSL_VERIFY ?? '') ||
-    transportConfig?.env?.NODE_TLS_REJECT_UNAUTHORIZED === '0'
-  )
-    throw new ConfluenceError('unsafeTls');
+  // Use the registered MCP's arguments and environment, including its TLS settings.
   const transport = new StdioClientTransport({
     command: transportConfig?.command ?? demoRuntime,
     args: transportConfig?.args ?? ['-e', confluenceDemoSource],
@@ -208271,7 +208284,7 @@ export function formatTime(
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/format.ts
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/i18n-keys.d.ts
-FILE_METADATA: {"encoding":"utf8","originalBytes":122201,"payloadBytes":122201,"sha256":"9a68b0405fdcdd0f7c36c28ae8a983f3e12d0759fb5e7d810102b7205f234272"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":122154,"payloadBytes":122154,"sha256":"2c04f54300b6fa297da0c0d2a00e192ebfb3bd8ac1bb6a265bcb98fa70448045"}
 FILE_CONTENT_BEGIN
 /* eslint-disable */
 /**
@@ -208854,7 +208867,6 @@ export type I18nKey =
   | 'conversation.confluence.errors.outsideRoot'
   | 'conversation.confluence.errors.publishUncertain'
   | 'conversation.confluence.errors.requestFailed'
-  | 'conversation.confluence.errors.unsafeTls'
   | 'conversation.confluence.errors.unsupportedVersion'
   | 'conversation.confluence.expand'
   | 'conversation.confluence.heading'
@@ -212166,7 +212178,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/de-DE/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":47179,"payloadBytes":47179,"sha256":"c31c12b887c38e7fe66664bfdd5d39a1918e9af0cedba4b8cfa5f6d94777977b"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":47026,"payloadBytes":47026,"sha256":"263a6e478f89b2c8dfceedb0d5cbbe2adbb0ec300d5fd7269e60823502d073e2"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -212214,7 +212226,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -216072,7 +216083,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/en-US/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":42195,"payloadBytes":42195,"sha256":"0fb3eb09c1c2225d7f81b39dcca7cd831b7f8826b84688513bbaf626b747209c"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":42042,"payloadBytes":42042,"sha256":"a67523da4aa70f4af54bc1e901da4fbdabccda6185b06ddb79290cd110fda353"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -216120,7 +216131,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -219959,7 +219969,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/es-ES/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":46197,"payloadBytes":46197,"sha256":"2c59e88ebb4315b0d30a07f62b6c35c277df897273d36028c3057db1cf58f983"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":46044,"payloadBytes":46044,"sha256":"766833d2906edc770eaf5162de1a90f7e3ecacb9700059b0207c95bc249a606f"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -220007,7 +220017,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -223870,7 +223879,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fa-IR/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":58086,"payloadBytes":58086,"sha256":"7c3a1a75a7144c8bae81eae562aff283f7d210a47162b6f8d1cd9e87d4743f09"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":57933,"payloadBytes":57933,"sha256":"b4be8864bd520163e7cb1a46fc056e655e9ae905f21ff5474133f14763671693"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -223918,7 +223927,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -227757,7 +227765,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/fr-FR/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":48571,"payloadBytes":48571,"sha256":"45ff7b864c181185974492553c2455e9ed97dff6c927ecb980efd11445bf1c45"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":48418,"payloadBytes":48418,"sha256":"4efd6bdd87f2303a8df3444dfded75b53bfab1f57f23574c247d16f42b63a3ea"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -227805,7 +227813,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -231644,7 +231651,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ja-JP/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":52788,"payloadBytes":52788,"sha256":"6184579fa82904f813c2c041ec74f330924d70390493ca17b999e8d0a674237b"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":52635,"payloadBytes":52635,"sha256":"1f870bb5c307c7a4fd6d165b70be28c1a173d7543ef5e1d4a9a8fca234810426"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -231692,7 +231699,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -235537,7 +235543,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ko-KR/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":48970,"payloadBytes":48970,"sha256":"4666aef6faf6ac3a24b1f27b006199595b5459270e88d5e990444ecf657c5d6a"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":48795,"payloadBytes":48795,"sha256":"eb43ed70ca2058f677e846e607b808881e7a13ba2a3592d1a6e3f2f28a035bf9"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -235585,7 +235591,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "설정한 MCP 사이트의 HTTPS 페이지 URL을 입력하세요. pageId, /pages/{id}, /display/{space}/{title} 형식을 지원합니다.",
       "notConnected": "이 프로젝트에 사용 가능한 stdio 컨플루언스 MCP 연결이 없습니다.",
       "missingTool": "연결된 MCP에 필요한 컨플루언스 도구가 없거나 이름이 중복되어 있습니다.",
-      "unsafeTls": "이 MCP는 TLS 검증을 끄고 있습니다. 회사 CA를 신뢰하도록 설정하고 TLS 검증 비활성화 옵션을 제거한 뒤 연결하세요.",
       "outsideRoot": "프로젝트 루트 밖의 문서이거나 하위 문서 관계를 확인할 수 없습니다.",
       "changed": "원문 버전이 바뀌었거나 게시가 이미 진행 중입니다. 문서를 다시 읽고 초안을 확인하세요.",
       "notPage": "편집 가능한 페이지가 아닙니다.",
@@ -239423,7 +239428,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/pt-BR/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":47358,"payloadBytes":47358,"sha256":"2678f9af935e8917a88152f107a31407264775721c98e52ba7eb48cd6a70115f"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":47205,"payloadBytes":47205,"sha256":"b42646ca83a5cc35eacae76017fe31890c14b589d26620d898ff9c7182fbf638"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -239471,7 +239476,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -243321,7 +243325,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/ru-RU/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":62255,"payloadBytes":62255,"sha256":"78df566cd8b437a6c43f93866b53aa635ee7a1457ea88ea8f9b677e2c31baf74"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":62102,"payloadBytes":62102,"sha256":"f75a13f69e8c56ce01b6a42402394c6d4b86df78ae0d04b722c7edb2f16d4f27"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -243369,7 +243373,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -247246,7 +247249,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/tr-TR/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":44895,"payloadBytes":44895,"sha256":"f1cb19ca46ebc5518e430b6b75bc55b0a49838552fcdccb22c3eb79bc5e9108b"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":44742,"payloadBytes":44742,"sha256":"11fd4e1a6f00d43758f40c69544c699a11a203ec77a4bcfe5dd16ae63f6a3e15"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -247294,7 +247297,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -251147,7 +251149,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/uk-UA/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":61083,"payloadBytes":61083,"sha256":"7b6919da1599e4c8828b04e63d95e1db62f290deb5b51b3d76fa413c3a53bfbe"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":60930,"payloadBytes":60930,"sha256":"d5b16a007e8d5f49e37709af0e28edfd29d689d6b0fca944e0ee24ef53d8d3e8"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -251195,7 +251197,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -255065,7 +255066,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-CN/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":40782,"payloadBytes":40782,"sha256":"0b08a2f1a2cbd36a1cf04fdfb6aa921846d28d5c2401a46ec5bc8b051d2bc82c"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":40629,"payloadBytes":40629,"sha256":"add0bfce4205a5b33bd0ca2a21da9257dfd66d567a7facc4829c561e82f932cd"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -255113,7 +255114,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -258954,7 +258954,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/common.json
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/services/i18n/locales/zh-TW/conversation.json
-FILE_METADATA: {"encoding":"utf8","originalBytes":41005,"payloadBytes":41005,"sha256":"3028776ceea334e1442e110534c48b87d669d950f4aa13949866266501690718"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":40852,"payloadBytes":40852,"sha256":"de8bfe45696ff92212922758b4abde68952a1faccf8c47e9fdea567a890fd801"}
 FILE_CONTENT_BEGIN
 {
   "confluence": {
@@ -259002,7 +259002,6 @@ FILE_CONTENT_BEGIN
       "invalidRoot": "Use an HTTPS page URL with pageId, /pages/{id}, or /display/{space}/{title}, on the configured MCP site.",
       "notConnected": "This project has no available stdio Confluence MCP connection.",
       "missingTool": "The connected MCP does not expose a required, unambiguous Confluence tool.",
-      "unsafeTls": "This MCP disables TLS verification. Configure the approved company CA and remove TLS-disable options before using this connection.",
       "outsideRoot": "The page is outside the project root, or its ancestry could not be verified.",
       "changed": "The source version changed or a write is already running. Reload the document and review your draft again.",
       "notPage": "This item is not an editable page.",
@@ -565723,11 +565722,12 @@ describe('MCP response decoding', () => {
 
 FILE_END: sm-atlas-aion/tests/unit/process/services/confluenceCodec.test.ts
 FILE_BEGIN: sm-atlas-aion/tests/unit/process/services/confluenceMcp.test.ts
-FILE_METADATA: {"encoding":"utf8","originalBytes":11785,"payloadBytes":11785,"sha256":"89295c34daefdd33089f02cfc22c2f65bca04e3da84e0eb06ae6016009d24168"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":13493,"payloadBytes":13493,"sha256":"1dbf9cc0dfcbcf4ec1f7f2a450faec1eeac87aaddf09268c6809ada0a34978ee"}
 FILE_CONTENT_BEGIN
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ConfluenceService } from '@/process/services/confluence/ConfluenceService';
 import { confluenceChildEnvironment, openConfluenceMcp } from '@/process/services/confluence/McpClient';
+import { confluenceDemoSource } from '@/process/services/confluence/demoServer';
 import {
   CONFLUENCE_DEMO_ROOT,
   CONFLUENCE_DEMO_SERVER,
@@ -565908,11 +565908,48 @@ describe('real stdio Confluence workflow (no company connection or model call)',
 });
 
 describe('MCP subprocess trust and credential handling', () => {
-  it('refuses configured TLS-disable options before spawning a process', async () => {
+  it.each([
+    { name: 'CLI options', args: ['--no-confluence-ssl-verify', '--no-jira-ssl-verify'], env: {} },
+    { name: 'MCP environment', args: [], env: { CONFLUENCE_SSL_VERIFY: 'false', JIRA_SSL_VERIFY: '0' } },
+    { name: 'Node environment', args: [], env: { NODE_TLS_REJECT_UNAUTHORIZED: '0' } },
+    { name: 'verification enabled', args: [], env: { CONFLUENCE_SSL_VERIFY: 'true', JIRA_SSL_VERIFY: '1' } },
+  ])('connects and saves a project using the configured $name without rewriting it', async ({ args, env }) => {
+    const source = `
+      const expected = ${JSON.stringify({ args, env })};
+      if (JSON.stringify(process.argv.slice(1)) !== JSON.stringify(expected.args)) process.exit(23);
+      for (const [key, value] of Object.entries(expected.env)) {
+        if (process.env[key] !== value) process.exit(24);
+      }
+      ${confluenceDemoSource}
+    `;
     const server = {
-      transport: { type: 'stdio', command: process.execPath, args: ['--no-confluence-ssl-verify'] },
+      id: 'company-atlassian',
+      name: 'atlassian',
+      enabled: true,
+      transport: { type: 'stdio', command: process.execPath, args: ['-e', source, '--', ...args], env },
     } as IMcpServer;
-    await expect(openConfluenceMcp(server, '')).rejects.toMatchObject({ code: 'unsafeTls' });
+    const originalTransport = structuredClone(server.transport);
+    let saved: Record<string, ConfluenceBinding> = {};
+    const service = new ConfluenceService({
+      loadBindings: async () => saved,
+      saveBindings: async (value) => {
+        saved = value;
+      },
+      listServers: async () => [server],
+      openSession: (configuredServer) => openConfluenceMcp(configuredServer, ''),
+    });
+    services.push(service);
+
+    expect(
+      await service.handle({
+        action: 'connect',
+        workspacePath: 'C:/company-project',
+        serverId: server.id,
+        rootUrl: CONFLUENCE_DEMO_ROOT,
+      })
+    ).toMatchObject({ success: true, binding: { rootPageId: '100' } });
+    expect(saved['c:/company-project']).toMatchObject({ serverId: server.id, rootPageId: '100' });
+    expect(server.transport).toEqual(originalTransport);
   });
 
   it('does not inherit an unrelated personal H-Chat key into the Confluence process', () => {
