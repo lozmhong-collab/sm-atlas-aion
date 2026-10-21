@@ -1,10 +1,18 @@
 SM ATLAS — PLAIN TEXT FULL SOURCE BUNDLE
 Bundle format version: 2 / Encoding: UTF-8 / Integrity: exact bytes + SHA-256
-Generated: 2026-10-21T02:32:46.627Z
+Generated: 2026-10-21T03:25:52.887Z
 Files: 2360; readable UTF-8: 2311; Base64 assets: 49
 
-SM ATLAS — 회사 MCP·컨플 연결 호환성 수정 및 데스크톱 펫 제거 포함 소스 전달
+SM ATLAS — 세션 삭제 메뉴 표시·회사 MCP·컨플 연결 수정 및 데스크톱 펫 제거 포함 소스 전달
 TXT 작성일: 2026-10-21 / 최신 구현·검증일: 2026-10-21 / 제품 버전: 0.1.0
+
+이번 추가 수정 — 2026-10-21 (세션 메뉴 표시)
+- 세션 … 메뉴의 기본 최대 높이 200px 때문에 맨 아래 삭제 항목이 가려지던 문제를 수정했다.
+- ConversationRow.tsx의 메뉴에 전용 클래스를 지정하고 arco-override.css에서 해당 메뉴만 높이 제한과 내부 스크롤을 해제했다.
+- 기존 고정·읽음 표시·이름 변경·예약 작업·내보내기·보관·삭제 항목을 한 번에 표시하며 삭제 확인·취소 동작을 유지한다.
+- atlasPolish.e2e.ts는 클릭 전에 삭제 항목 전체가 보이는지와 메뉴의 숨은 스크롤을 검사한다. 기존 빌드에서는 실제로 이 검사가 실패했다.
+- 새 빌드의 실제 앱에서 큰 창과 1000×600 창의 메뉴 전체 표시, 삭제 취소 및 실제 세션 삭제를 확인했다.
+- 최종 전체 회귀 검사 5,169개 통과·실패 0개·기존 6개 건너뜀, TypeScript·i18n·lint·포맷·앱 빌드 통과이다.
 
 이번 추가 수정 — 2026-10-21 (컨플 연결)
 - 회사에서 정상 동작하는 MCP가 Atlas의 TLS 사전 검사에 막히는 문제를 해결했다.
@@ -858,6 +866,7 @@ packages/desktop/src/renderer/services/i18n/locales/zh-TW/preview.json
 packages/desktop/src/renderer/services/i18n/locales/zh-TW/settings.json
 packages/desktop/src/renderer/services/i18n/locales/zh-TW/team.json
 packages/desktop/src/renderer/services/i18n/locales/zh-TW/update.json
+packages/desktop/src/renderer/styles/arco-override.css
 packages/desktop/src/renderer/utils/emitter.ts
 packages/shared-scripts/package.json
 packages/shared-scripts/src/company-environment-check.js
@@ -1062,7 +1071,7 @@ e556c55da67b33737f2aaa130ed711158360a2abfe36ffba4c5063b22e8ffc6d  sm-atlas-aion/
 9e3fb67bb4eb0501e14c7f3b402358c88e1f7466c91165887e8f91c087fcc7fe  sm-atlas-aion/docs/guides/custom-theme.md
 b8119c328bcbefa4523902e7d05d943d78c2a85d488d2f74857bfba74dbe25ce  sm-atlas-aion/docs/guides/deploy-server.md
 789c5576e766b97981be78775e5bb9051537f343d1768c05685f96adfd0cfcb0  sm-atlas-aion/docs/guides/hub-testing.md
-29b2a2f0e9ce19c938fd4052c93b3e6a39857e1936defba7d05ddcd06631fe05  sm-atlas-aion/docs/guides/sm-atlas-company-environment.md
+5415316b2bc3344bcd5ff97e72454f8188aac35ed933a7c4bd63472e1569e30d  sm-atlas-aion/docs/guides/sm-atlas-company-environment.md
 15ad861d02f616bcebc5979f59b96449672085a444b935b72897edcaaeca2407  sm-atlas-aion/docs/guides/webui.md
 29b583053c00fa0783a3458b7904fe3d75ff62a7818273a92f2d8a4820ce6bea  sm-atlas-aion/docs/prds/agent-browser/prd.md
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  sm-atlas-aion/docs/prds/assistants/README.md
@@ -1745,7 +1754,7 @@ f6c434c442fe12a7d93c73218f68e0d814e04ed863827738a803dfa04a65ff38  sm-atlas-aion/
 12eea86e44e2a69a49fc89f9bdfff55ad9411aa125ed777cbdb0a1a0f90cd4bb  sm-atlas-aion/packages/desktop/src/renderer/index.html
 8f47b983a99b198f03259552bf3307f51bebbf19eeab3c503e5971efd82da29f  sm-atlas-aion/packages/desktop/src/renderer/main.tsx
 3cc3d52ab3173c6a57ba8c7778e8e8fbc7014c23dddad217a3c7a062b4ee2c65  sm-atlas-aion/packages/desktop/src/renderer/pages/TestShowcase.tsx
-26e573064772c209f965e55d7f2ff228f3c9c8685a8051bbbfb9bcb2f2db81ad  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/ConversationRow.tsx
+ea4bea0dc7552f5d12dd40f8ad86d79299d6d6fded6d38b69330183352f4516c  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/ConversationRow.tsx
 07c966b67717a96f58657af840c781e9e8a7cad575d3159cc545ea50744f2097  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/ConversationSearchPopover.css
 a33983c3a4b5c22efd92a4282ad09f79189bfbc49f3dd8fb4f04f226a3070e89  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/ConversationSearchPopover.tsx
 31cc5083a1d79e557553dd67f52f3320c7fb7f0bdff54d365c0c546e43a4a9f1  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/SortableConversationRow.tsx
@@ -2372,7 +2381,7 @@ b882a6bd4dbafd1b62a6f4820aad9bf2057073394c38c1499c881b78322329d0  sm-atlas-aion/
 9f0ae72f4e6567a00f7cbeed0f69b23076200dd7255b9f433cda4a3180435842  sm-atlas-aion/packages/desktop/src/renderer/services/speech/speechModels.ts
 9d3bfcc0b4d09e04ea11982112ba21f61044380ce80b56926282096045f428eb  sm-atlas-aion/packages/desktop/src/renderer/services/speech/speechStreamPolicy.ts
 ec92b81aa0a120aae6b3076d9997061f208222ab772940f1f01f76d2fc9e8b62  sm-atlas-aion/packages/desktop/src/renderer/styles/MIGRATION.md
-63790bf2febac58ec7839d30ecdc881b60308502f60ddcd2b74926d8ce3e7a88  sm-atlas-aion/packages/desktop/src/renderer/styles/arco-override.css
+8bf638e369b5555a0e5bd05937de2794aa4ce0958313670bc9e7af774e0e1383  sm-atlas-aion/packages/desktop/src/renderer/styles/arco-override.css
 e886e3d851565eba9a4c50f900df6e975ecfdf6e0b519fe6754895af09894075  sm-atlas-aion/packages/desktop/src/renderer/styles/colors.ts
 c8e901125b2f59d30dc966c2c4465b19e8fa7b04361a9bf49ca259e979fa56d9  sm-atlas-aion/packages/desktop/src/renderer/styles/layout.css
 b5bd06e9acb4c516ff5ef88346287d218ce44295167585e8b3bcf50c1dd1bb50  sm-atlas-aion/packages/desktop/src/renderer/styles/markdown.css
@@ -2616,7 +2625,7 @@ dd587f27fe184fcbdad480fff613f7cdca05e4953372a44d7b752107923535c4  sm-atlas-aion/
 bd05c30d1a6d7a16e73fade19e915e8d119bcd77cf1d2c2998bb4e88930d0568  sm-atlas-aion/scripts/verify-release-assets.sh
 4d7ce2922f6cd8fb6dbe5f02732a07289f6f6a2ecc77c33b6fa96bd4e6182250  sm-atlas-aion/scripts/webui.ts
 00ef8aca97ec82c555fdb704e9819738ade3b3163924748ca4edb11019fea368  sm-atlas-aion/tests/e2e/README.md
-82e6c3cf2c6bf50d44fb73b307b97a2bcb0e55d2f5a775f74618abc9fa319b8c  sm-atlas-aion/tests/e2e/cases/smatlas/atlasPolish.e2e.ts
+afc744235748e4251b4f6e147b1245789d78fb579dec5f609c05d0ead30c8d68  sm-atlas-aion/tests/e2e/cases/smatlas/atlasPolish.e2e.ts
 26dca644d0b15b8b4756ca63df4b51b7c32d67fba6ffd9875ddab6a3de24f59d  sm-atlas-aion/tests/e2e/cases/smatlas/companyEnvironment.e2e.ts
 8586e1682bd59c3705edb6a9911fb84632e24b8eb7065ba696da7bd0078c4a65  sm-atlas-aion/tests/e2e/cases/smatlas/confluence.e2e.ts
 25910e855658b77881fb955db09772c491dc5a361b379d6e5934ef238c0b722f  sm-atlas-aion/tests/e2e/cases/smatlas/index.ts
@@ -20951,11 +20960,19 @@ bun run test:e2e
 
 FILE_END: sm-atlas-aion/docs/guides/hub-testing.md
 FILE_BEGIN: sm-atlas-aion/docs/guides/sm-atlas-company-environment.md
-FILE_METADATA: {"encoding":"utf8","originalBytes":52931,"payloadBytes":52931,"sha256":"29b2a2f0e9ce19c938fd4052c93b3e6a39857e1936defba7d05ddcd06631fe05"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":54155,"payloadBytes":54155,"sha256":"5415316b2bc3344bcd5ff97e72454f8188aac35ed933a7c4bd63472e1569e30d"}
 FILE_CONTENT_BEGIN
 # SM Atlas company environment readiness
 
 SM Atlas is a local Windows x64 desktop application focused on Claude Code and Codex, with the local backend pinned to version 0.2.2. Work is organized by project directory and independent sessions. The earlier prototype remains separate.
+
+## 세션 메뉴의 삭제 버튼을 스크롤 없이 표시 — 2026-10-21
+
+세션의 `…` 메뉴는 Arco Dropdown의 기본 최대 높이 200px 때문에 마지막 삭제 항목이 일부 가려졌습니다. 세션 메뉴에만 적용되는 클래스로 높이 제한과 내부 스크롤을 해제해 고정·읽음 표시·이름 변경·예약 작업·내보내기·보관·삭제 등 표시되는 항목이 한 번에 보이도록 수정했습니다.
+
+실제 앱 검사에서 클릭 전에 삭제 버튼이 전부 보이는지, 메뉴 자체에 숨은 스크롤 영역이 없는지 확인하도록 기존 삭제 시나리오를 보강했습니다. 기존 빌드에서는 삭제 버튼의 약 39%만 보여 이 검사가 실패하는 것을 확인했습니다. 삭제 확인창과 취소·실제 세션 삭제 동작은 유지합니다.
+
+수정 후 새 빌드의 실제 Electron 앱에서 메뉴 전체 표시, 내부 스크롤 없음, 1000×600 창에서 삭제 버튼 전체 표시, 삭제 취소 및 실제 세션 삭제를 확인했습니다. 전체 회귀 검사도 최종 5,169개 통과·실패 0개·기존 6개 건너뜀으로 완료했으며 TypeScript·i18n·lint·포맷·앱 빌드가 통과했습니다.
 
 ## 컨플 연결에서 등록된 MCP 설정 그대로 사용 — 2026-10-21
 
@@ -133724,7 +133741,7 @@ export default ComponentsShowcase;
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/pages/TestShowcase.tsx
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/ConversationRow.tsx
-FILE_METADATA: {"encoding":"utf8","originalBytes":14427,"payloadBytes":14427,"sha256":"26e573064772c209f965e55d7f2ff228f3c9c8685a8051bbbfb9bcb2f2db81ad"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":14483,"payloadBytes":14483,"sha256":"ea4bea0dc7552f5d12dd40f8ad86d79299d6d6fded6d38b69330183352f4516c"}
 FILE_CONTENT_BEGIN
 /**
  * @license
@@ -133999,6 +134016,7 @@ const ConversationRow: React.FC<ConversationRowProps> = (props) => {
             <Dropdown
               droplist={
                 <Menu
+                  className='conversation-actions-menu'
                   onClickMenuItem={(key) => {
                     if (key === 'pin') {
                       onTogglePin(conversation);
@@ -263413,7 +263431,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/styles/MIGRATION.md
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/styles/arco-override.css
-FILE_METADATA: {"encoding":"utf8","originalBytes":23653,"payloadBytes":23653,"sha256":"63790bf2febac58ec7839d30ecdc881b60308502f60ddcd2b74926d8ce3e7a88"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":23825,"payloadBytes":23825,"sha256":"8bf638e369b5555a0e5bd05937de2794aa4ce0958313670bc9e7af774e0e1383"}
 FILE_CONTENT_BEGIN
 /* Arco Design custom overrides - non-theme related */
 
@@ -264044,6 +264062,12 @@ body[arco-theme='dark'] .arco-message-error {
    200px-capped dropdowns keep their scroll. Higher specificity than the base
    rule, so no !important is needed. */
 .arco-dropdown-menu.explorer-context-menu {
+  max-height: none;
+  overflow: visible;
+}
+
+/* Keep every session action, including Delete, visible when the menu opens. */
+.arco-dropdown-menu.conversation-actions-menu {
   max-height: none;
   overflow: visible;
 }
@@ -485161,7 +485185,7 @@ for (const t of teams) {
 
 FILE_END: sm-atlas-aion/tests/e2e/README.md
 FILE_BEGIN: sm-atlas-aion/tests/e2e/cases/smatlas/atlasPolish.e2e.ts
-FILE_METADATA: {"encoding":"utf8","originalBytes":6034,"payloadBytes":6034,"sha256":"82e6c3cf2c6bf50d44fb73b307b97a2bcb0e55d2f5a775f74618abc9fa319b8c"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":6908,"payloadBytes":6908,"sha256":"afc744235748e4251b4f6e147b1245789d78fb579dec5f609c05d0ead30c8d68"}
 FILE_CONTENT_BEGIN
 import { mkdir, writeFile, stat } from 'node:fs/promises';
 import path from 'node:path';
@@ -485274,7 +485298,25 @@ test('MCP imports execute a real stdio child, actions stay visible, and sessions
     .hover();
   await page.getByTestId(`conversation-row-menu-${conversationId}`).click();
   await expect(page.getByText(/보관|Archive/, { exact: true })).toBeVisible();
-  await page.getByRole('menuitem', { name: /^(삭제|Delete)$/ }).click();
+  const deleteItem = page.getByRole('menuitem', { name: /^(삭제|Delete)$/ });
+  // Check visibility before clicking: Playwright would otherwise scroll the item into view.
+  await expect(deleteItem).toBeInViewport({ ratio: 1 });
+  const actionMenu = page.getByRole('menu').filter({ has: deleteItem });
+  const menuSize = await actionMenu.evaluate((menu) => ({
+    scrollHeight: menu.scrollHeight,
+    clientHeight: menu.clientHeight,
+    scrollTop: menu.scrollTop,
+  }));
+  expect(menuSize.scrollHeight).toBeLessThanOrEqual(menuSize.clientHeight + 1);
+  expect(menuSize.scrollTop).toBe(0);
+  await atlasApp.evaluate(({ BrowserWindow }) => {
+    BrowserWindow.getAllWindows()
+      .find((window) => !window.isDestroyed())
+      ?.setContentSize(1000, 600);
+  });
+  await expect(deleteItem).toBeInViewport({ ratio: 1 });
+  await page.screenshot({ path: testInfo.outputPath('session-menu-visible.png'), fullPage: true });
+  await deleteItem.click();
   await expect(page.getByRole('dialog')).toContainText(/영구 삭제|Permanently delete/);
   await page
     .getByRole('dialog')
