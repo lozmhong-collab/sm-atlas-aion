@@ -1,10 +1,20 @@
 SM ATLAS — PLAIN TEXT FULL SOURCE BUNDLE
 Bundle format version: 2 / Encoding: UTF-8 / Integrity: exact bytes + SHA-256
-Generated: 2026-10-22T01:22:52.570Z
+Generated: 2026-10-22T04:48:01.388Z
 Files: 2368; readable UTF-8: 2318; Base64 assets: 50
 
-SM ATLAS — Windows 파일 탐색기·세션 메뉴·회사 MCP·컨플 연결 수정 및 데스크톱 펫 제거 포함 소스 전달
-TXT 작성일: 2026-10-22 / 최신 구현일: 2026-10-21 / 최종 검증일: 2026-10-22 / 제품 버전: 0.1.0
+SM ATLAS — 대화 작업 단계 기본 접힘·Windows 파일 탐색기·세션 메뉴·회사 MCP·컨플 연결 수정 및 데스크톱 펫 제거 포함 소스 전달
+TXT 작성일: 2026-10-22 / 최신 구현일: 2026-10-22 / 최종 검증일: 2026-10-22 / 제품 버전: 0.1.0
+
+이번 추가 수정 — 2026-10-22 (대화 작업 단계 기본 접힘)
+- 대화창의 View Steps와 생각 내용은 진행 중·완료 여부와 관계없이 처음에는 접힌 상태로 표시한다. 사용자가 제목을 눌렀을 때만 내용을 펼친다.
+- MessageToolGroupSummary.tsx에서 실행 중인 도구가 있으면 자동으로 펼치던 초기값과 상태 변경 효과를 제거했다. 새로운 도구가 실행되거나 상태가 갱신되어도 사용자가 닫은 View Steps를 다시 펼치지 않는다.
+- MessageThinking.tsx도 기본 접힘으로 바꾸었다. 접힌 생각 내용은 HTML hidden 속성으로 숨겨 대화창 공간을 차지하지 않는다. 기존 완료 시 자동 접힘은 유지한다.
+- 제목의 진행 표시와 작업 개수, 펼친 후의 도구 입력·출력·이미지·다운로드 기능은 유지한다. 도구 실행·모델 요청·MCP 연결 동작은 변경하지 않았다.
+- 기본 접힘·수동 펼침/닫힘·실행 상태 갱신 시 닫힘 유지 검사를 추가했다. 수정 전에는 해당 4개 검사가 실패했고 수정 후에는 메시지·작업 단계 관련 5개 파일의 42개 검사가 모두 통과했다.
+- 데스크톱 전체 검사: 5,188개 통과·PreviewPanel 모듈 cold import 시간 초과 1개·기존 6개 건너뜀이다. 실패한 PreviewPanel 파일만 단독 재검사해 3개 모두 통과했다. 전체 한 번의 실행이 실패 0개였다고 표현하지 않는다.
+- TypeScript·13개 언어 i18n·변경 파일 lint(오류 0개)·포맷 검사를 통과했다. 이 UI 변경의 실제 Electron E2E나 설치 EXE 재빌드는 수행하지 않았다. 기존에 검증한 패치 AionCore 압축본은 변경하지 않았다.
+- 회사 적용 시 위 두 컴포넌트와 MessageThinking.module.css를 함께 병합하고 데스크톱 앱을 다시 빌드한다. 이 UI 변경에 별도의 백엔드 수정은 없다.
 
 이번 추가 수정 — 2026-10-21 (Windows 파일 탐색기)
 - 회사에서 C:\chatbot 아래 실제 파일이 있는데도 오른쪽 탐색기에 빈 목록으로 표시되던 보고를 반영했다.
@@ -755,6 +765,9 @@ packages/desktop/src/renderer/pages/conversation/GroupedHistory/hooks/useConvers
 packages/desktop/src/renderer/pages/conversation/GroupedHistory/index.tsx
 packages/desktop/src/renderer/pages/conversation/GroupedHistory/types.ts
 packages/desktop/src/renderer/pages/conversation/Messages/MessageList.tsx
+packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.module.css
+packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.tsx
+packages/desktop/src/renderer/pages/conversation/Messages/components/MessageToolGroupSummary.tsx
 packages/desktop/src/renderer/pages/conversation/explorer/ExplorerContainer.tsx
 packages/desktop/src/renderer/pages/conversation/explorer/ExplorerPanel.tsx
 packages/desktop/src/renderer/pages/conversation/explorer/explorerStore.ts
@@ -998,6 +1011,8 @@ tests/unit/renderer/layout/LayoutSiderBrandHome.dom.test.tsx
 tests/unit/renderer/mcpImport.dom.test.tsx
 tests/unit/renderer/mermaidBlockPanZoom.dom.test.tsx
 tests/unit/renderer/messageList.dom.test.tsx
+tests/unit/renderer/messageThinking.dom.test.tsx
+tests/unit/renderer/messageToolGroupSummary.dom.test.tsx
 tests/unit/renderer/project/confluencePanel.dom.test.tsx
 tests/unit/renderer/project/confluencePrompt.dom.test.ts
 tests/unit/renderer/project/projectWorkspace.test.ts
@@ -1838,13 +1853,13 @@ f77df2078a0f0ca2fbe8f3bb8e695e6667c06fb3baa4ed73cf7ddc79d83b2dc7  sm-atlas-aion/
 fdcd24f8faf68a518b6717def44bcebcdbdbbe3f7ad895993678daef37153b94  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessagePermission/permissionOptions.ts
 7f1b5e50ebc71020f3ed143544f10aea6cbe6243cf46fcbb897855da8e3589b8  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageSkillSuggest.tsx
 11f0562a1762e6dac4591885a110c1848abff404c4a19acae0be734413661806  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageText.tsx
-5708fe7e329cfd41c02b3f6e4a21fc9a8a628c0dd02ad1ead8f00eb8134c02d9  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.module.css
-3cfdba8dd31517ccb80864fac9dedcd95dedf876674557ad115ff4da4473e31f  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.tsx
+0ffb000c76144dd228afd578eac54ab7afa1bb824f739f26054d4492b1dd3e21  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.module.css
+5e7a8a956e330efb5ff17b2e6a86bdbfa20f236fe66a097949e2054fe76299bd  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.tsx
 8bdc1d1cfe90dbc3464797b45aa1b5579891bb16403577ba1f7baa640b457669  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageTips.tsx
 3e857841e5bdcee3e6e33f5a7d02c5d18c7d91b86559717ea1e2766445cdad2d  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageToolCall.tsx
 a6526b79c9843e8cdc4e772749d9dcd74d955125b15c71ca6cbec24867a7779b  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageToolGroup.tsx
 f2471037518f8818f76c762d8628923fa867f6ea3a369437107380b338bf9622  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageToolGroupSummary.css
-10207f39c1727c32e59b633b39e9d1b69609bded0350ded13e7a501137ebd269  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageToolGroupSummary.tsx
+13332205a1e9fa9d947f9c00430f5049619c54b4f772b664bfebe44a6850d236  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageToolGroupSummary.tsx
 429e9213d94bd2c041dde00c80d3fabacc6756ee97855ecffef818f53e7e6b4d  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/SelectionReplyButton.tsx
 631cdaed38baad9462cf7d7b486ee34cffdb723f4bdc2ab88e735fd04c4ab24f  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/SessionMentionAction.tsx
 1cc6ab334dedb7c55324b8ee85b4f4f248b2b82511f11e4eb9670553c3056a40  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/SkillSuggestCard.tsx
@@ -3207,9 +3222,9 @@ ff118a80108b9778b760db4b4464aa4e89d5222534dc6d05aad9345ba75746dc  sm-atlas-aion/
 4b15c3e221390e4601638fbf920697b93c0a3c68e56923d3d82b9e10a4150f41  sm-atlas-aion/tests/unit/renderer/messageListStreaming.dom.test.tsx
 d2328fb37546fc4e0b5e2a630fd129b7d207744960e8a42ce2cad904571e8199  sm-atlas-aion/tests/unit/renderer/messageMerging.dom.test.tsx
 bd8e587825ae1458ac69f2cac91b2cdd66324ecf68b5ef23b89ba51344fa05f7  sm-atlas-aion/tests/unit/renderer/messagePagination.test.ts
-2f6e0f410a9f711b08038055198636031926b5c0e90e8a17bd84121a3287169a  sm-atlas-aion/tests/unit/renderer/messageThinking.dom.test.tsx
+cb592205b681e2017f821ae4e91570d639c6e0b8926d057c827bbe1f1f5fcc26  sm-atlas-aion/tests/unit/renderer/messageThinking.dom.test.tsx
 0451ea7afe3e69ff06675e83e821b5fbfb03f30854fba62a5e9d6a514836f857  sm-atlas-aion/tests/unit/renderer/messageTipsIcon.dom.test.tsx
-68600f8dcc86c57eb75230289ad1a1783458c6f299b39aca66e9bbb93e6ccbff  sm-atlas-aion/tests/unit/renderer/messageToolGroupSummary.dom.test.tsx
+3dfe187676ff92869dcae751e18ddc2bfeb64ab5a664828151cb980c5aa019e5  sm-atlas-aion/tests/unit/renderer/messageToolGroupSummary.dom.test.tsx
 e3800640fd0b506126cdcd55699eb3128c1116efd6682a36a572193d5975e084  sm-atlas-aion/tests/unit/renderer/migrationLetterCopy.test.ts
 aeec8228688aec117f166c4e435c8cc94bed50783bbea81a16971f8077d6a152  sm-atlas-aion/tests/unit/renderer/modelPlatforms.test.ts
 fa23e0c2a5bbd9968e2a958e40fdeba8abc0929a8b9a824a2665f042c4107004  sm-atlas-aion/tests/unit/renderer/monitorClient.test.ts
@@ -141816,7 +141831,7 @@ export default MessageText;
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageText.tsx
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.module.css
-FILE_METADATA: {"encoding":"utf8","originalBytes":1176,"payloadBytes":1176,"sha256":"5708fe7e329cfd41c02b3f6e4a21fc9a8a628c0dd02ad1ead8f00eb8134c02d9"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":1143,"payloadBytes":1143,"sha256":"0ffb000c76144dd228afd578eac54ab7afa1bb824f739f26054d4492b1dd3e21"}
 FILE_CONTENT_BEGIN
 .container {
   width: 100%;
@@ -141882,10 +141897,6 @@ FILE_CONTENT_BEGIN
   background: var(--aou-1);
 }
 
-.collapsed {
-  display: none;
-}
-
 .summary {
   white-space: nowrap;
 }
@@ -141899,7 +141910,7 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.module.css
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.tsx
-FILE_METADATA: {"encoding":"utf8","originalBytes":3685,"payloadBytes":3685,"sha256":"3cfdba8dd31517ccb80864fac9dedcd95dedf876674557ad115ff4da4473e31f"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":3660,"payloadBytes":3660,"sha256":"5e7a8a956e330efb5ff17b2e6a86bdbfa20f236fe66a097949e2054fe76299bd"}
 FILE_CONTENT_BEGIN
 /**
  * @license
@@ -141941,7 +141952,7 @@ const MessageThinking: React.FC<{ message: IMessageThinking }> = ({ message }) =
   const { content: text, status, subject } = message.content;
   const duration = message.content.duration ?? (message.content as { duration_ms?: number }).duration_ms;
   const isDone = status === 'done';
-  const [expanded, setExpanded] = useState(!isDone);
+  const [expanded, setExpanded] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(() => {
     const initialStartedAt = message.created_at ?? Date.now();
     return isDone ? 0 : Math.max(0, Math.floor((Date.now() - initialStartedAt) / 1000));
@@ -141989,7 +142000,7 @@ const MessageThinking: React.FC<{ message: IMessageThinking }> = ({ message }) =
           <Right theme='outline' size='12' />
         </span>
       </div>
-      <div ref={bodyRef} className={`${styles.body} ${!expanded ? styles.collapsed : ''}`}>
+      <div ref={bodyRef} className={styles.body} hidden={!expanded}>
         {text}
       </div>
     </div>
@@ -143101,13 +143112,13 @@ FILE_CONTENT_BEGIN
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageToolGroupSummary.css
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/Messages/components/MessageToolGroupSummary.tsx
-FILE_METADATA: {"encoding":"utf8","originalBytes":7028,"payloadBytes":7028,"sha256":"10207f39c1727c32e59b633b39e9d1b69609bded0350ded13e7a501137ebd269"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":6932,"payloadBytes":6932,"sha256":"13332205a1e9fa9d947f9c00430f5049619c54b4f772b664bfebe44a6850d236"}
 FILE_CONTENT_BEGIN
 import type { BadgeProps } from '@arco-design/web-react';
 import { Badge, Button, Message, Spin, Tooltip } from '@arco-design/web-react';
 import { IconDown, IconRight } from '@arco-design/web-react/icon';
 import { Checklist, Download, Right } from '@icon-park/react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ipcBridge } from '@/common';
 import { getAcpImageFileName } from '@/common/chat/acpToolCallOutput';
@@ -143247,11 +143258,7 @@ const ToolItemDetail: React.FC<{ item: NormalizedToolCall }> = ({ item }) => {
 
 const MessageToolGroupSummary: React.FC<{ messages: ToolMessage[] }> = ({ messages }) => {
   const hasRunning = hasRunningToolMessages(messages);
-  const [showMore, setShowMore] = useState(hasRunning);
-
-  useEffect(() => {
-    if (hasRunning) setShowMore(true);
-  }, [hasRunning]);
+  const [showMore, setShowMore] = useState(false);
 
   const tools = useMemo(() => normalizeToolMessages(messages), [messages]);
 
@@ -884975,7 +884982,7 @@ describe('message pagination helpers', () => {
 
 FILE_END: sm-atlas-aion/tests/unit/renderer/messagePagination.test.ts
 FILE_BEGIN: sm-atlas-aion/tests/unit/renderer/messageThinking.dom.test.tsx
-FILE_METADATA: {"encoding":"utf8","originalBytes":1644,"payloadBytes":1644,"sha256":"2f6e0f410a9f711b08038055198636031926b5c0e90e8a17bd84121a3287169a"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":2310,"payloadBytes":2310,"sha256":"cb592205b681e2017f821ae4e91570d639c6e0b8926d057c827bbe1f1f5fcc26"}
 FILE_CONTENT_BEGIN
 /**
  * @license
@@ -884984,7 +884991,7 @@ FILE_CONTENT_BEGIN
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IMessageThinking } from '@/common/chat/chatLib';
 import MessageThinking from '@/renderer/pages/conversation/Messages/components/MessageThinking';
@@ -885017,6 +885024,19 @@ describe('MessageThinking', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it('keeps streaming thoughts hidden until clicked and lets the user close them again', () => {
+    const message = createThinkingMessage(Date.now());
+    const { rerender } = render(<MessageThinking message={message} />);
+
+    expect(screen.getByText('analyzing')).not.toBeVisible();
+    fireEvent.click(screen.getByText('Thinking... · 0s'));
+    expect(screen.getByText('analyzing')).toBeVisible();
+
+    fireEvent.click(screen.getByText('Thinking... · 0s'));
+    rerender(<MessageThinking message={{ ...message, content: { ...message.content, content: 'more thoughts' } }} />);
+    expect(screen.getByText('more thoughts')).not.toBeVisible();
   });
 
   it('preserves elapsed time when the component remounts for an active thinking message', () => {
@@ -885084,13 +885104,13 @@ describe('MessageTips icon map', () => {
 
 FILE_END: sm-atlas-aion/tests/unit/renderer/messageTipsIcon.dom.test.tsx
 FILE_BEGIN: sm-atlas-aion/tests/unit/renderer/messageToolGroupSummary.dom.test.tsx
-FILE_METADATA: {"encoding":"utf8","originalBytes":2460,"payloadBytes":2460,"sha256":"68600f8dcc86c57eb75230289ad1a1783458c6f299b39aca66e9bbb93e6ccbff"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":4233,"payloadBytes":4233,"sha256":"3dfe187676ff92869dcae751e18ddc2bfeb64ab5a664828151cb980c5aa019e5"}
 FILE_CONTENT_BEGIN
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ipcBridge } from '@/common';
-import type { TMessage } from '@/common/chat/chatLib';
+import type { IMessageToolCall, TMessage } from '@/common/chat/chatLib';
 import type { ToolMessage } from '@/common/chat/normalizeToolCall';
 import MessageToolGroupSummary from '@/renderer/pages/conversation/Messages/components/MessageToolGroupSummary';
 
@@ -885105,6 +885125,42 @@ vi.mock('@/common', () => ({
 }));
 
 describe('MessageToolGroupSummary', () => {
+  const createToolMessage = (status: IMessageToolCall['content']['status']): IMessageToolCall => ({
+    id: 'tool-1',
+    conversation_id: 'conversation-1',
+    type: 'tool_call',
+    content: { call_id: 'tool-1', name: 'Search project', status, args: { query: 'needle' } },
+  });
+
+  it.each(['running', 'completed', 'error'] as const)('keeps %s steps hidden until the user opens them', (status) => {
+    render(<MessageToolGroupSummary messages={[createToolMessage(status)]} />);
+
+    expect(screen.queryByText('Search project')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('View Steps · 1'));
+    expect(screen.getByText('Search project')).toBeVisible();
+  });
+
+  it('does not reopen steps when a completed tool starts running again', () => {
+    const { rerender } = render(<MessageToolGroupSummary messages={[createToolMessage('completed')]} />);
+
+    rerender(<MessageToolGroupSummary messages={[createToolMessage('running')]} />);
+
+    expect(screen.queryByText('Search project')).not.toBeInTheDocument();
+  });
+
+  it('keeps the user selection through tool updates and allows closing steps again', () => {
+    const { rerender } = render(<MessageToolGroupSummary messages={[createToolMessage('completed')]} />);
+    fireEvent.click(screen.getByText('View Steps · 1'));
+
+    rerender(<MessageToolGroupSummary messages={[createToolMessage('running')]} />);
+    expect(screen.getByText('Search project')).toBeVisible();
+
+    fireEvent.click(screen.getByText('View Steps · 1'));
+    rerender(<MessageToolGroupSummary messages={[createToolMessage('completed')]} />);
+    rerender(<MessageToolGroupSummary messages={[createToolMessage('running')]} />);
+    expect(screen.queryByText('Search project')).not.toBeInTheDocument();
+  });
+
   it('loads full tool content when expanding a compact history item', async () => {
     const invoke = vi.mocked(ipcBridge.database.getConversationMessage.invoke);
     invoke.mockResolvedValue({
