@@ -1,10 +1,21 @@
 SM ATLAS — PLAIN TEXT FULL SOURCE BUNDLE
 Bundle format version: 2 / Encoding: UTF-8 / Integrity: exact bytes + SHA-256
-Generated: 2026-10-22T04:48:01.388Z
+Generated: 2026-10-22T05:07:50.770Z
 Files: 2368; readable UTF-8: 2318; Base64 assets: 50
 
-SM ATLAS — 대화 작업 단계 기본 접힘·Windows 파일 탐색기·세션 메뉴·회사 MCP·컨플 연결 수정 및 데스크톱 펫 제거 포함 소스 전달
+SM ATLAS — 프로젝트 버튼 상시 표시·대화 작업 단계 기본 접힘·Windows 파일 탐색기·세션 메뉴·회사 MCP·컨플 연결 수정 및 데스크톱 펫 제거 포함 소스 전달
 TXT 작성일: 2026-10-22 / 최신 구현일: 2026-10-22 / 최종 검증일: 2026-10-22 / 제품 버전: 0.1.0
+
+이번 추가 수정 — 2026-10-22 (프로젝트 버튼 상시 표시)
+- 왼쪽 프로젝트 행에서 새 대화 +와 세로 ⋮ 메뉴를 항상 각각 표시한다. 마우스를 올리거나 치울 때 버튼이 나타나거나 위치가 바뀌지 않는다.
+- GroupedHistory/index.tsx의 프로젝트 메뉴에서 hidden/group-hover 표시 조건을 제거하고 +와 ⋮를 각각 24px 고정 크기의 Arco Button으로 통일했다. 기존 새 대화·프로젝트 메뉴 동작과 클릭 전파 차단을 유지한다.
+- WorkspaceCollapse.tsx의 오른쪽 버튼 영역은 기존 22px 고정 폭 대신 두 버튼의 전체 폭을 확보한다. 프로젝트 제목은 확보된 공간에 맞춰 줄여 표시해 버튼이 제목을 덮지 않는다.
+- 기존 projectSessions.e2e.ts는 마우스를 올린 다음에만 메뉴를 눌러 이 문제를 놓쳤다. 클릭 전 두 버튼 표시, hover 전후 및 마우스를 치운 후 좌표 유지, 제목과 버튼의 비겹침, 프로젝트 +로 새 대화 생성, hover 없이 메뉴 접근을 확인하도록 보완했다.
+- 수정 전 실제 Electron 빌드에서 마우스를 프로젝트 밖으로 옮기면 ⋮가 숨겨지는 것으로 해당 검사가 실패해 문제를 재현했다.
+- 새 Electron main/preload/renderer 빌드와 기존 패치 AionCore로 실제 앱 E2E 1개가 통과했다(24.9초). 두 버튼의 상시 표시·좌표 유지·제목과 비겹침, 프로젝트 +로 별도 세션 생성, 메뉴에서 프로젝트 제거 및 폴더 보존을 확인했다. 회사 서버에 모델 요청을 보내지 않았다.
+- 데스크톱 전체 검사 5,189개 통과·실패 0개·기존 6개 건너뜀이다. TypeScript·13개 언어 i18n·변경 파일 lint(경고/오류 0개)·포맷 검사와 실제 화면 확인도 통과했다.
+- 이 수정은 소스 스냅샷으로 전달한다. 새 Windows 설치 EXE는 만들지 않았으므로 회사 설치 앱에는 병합 후 재빌드하여 적용한다.
+- 회사에는 위 두 컴포넌트를 함께 병합하고 앱을 다시 빌드한다. 앞선 View Steps 기본 접힘과 패치 AionCore를 포함한 기존 변경은 유지한다.
 
 이번 추가 수정 — 2026-10-22 (대화 작업 단계 기본 접힘)
 - 대화창의 View Steps와 생각 내용은 진행 중·완료 여부와 관계없이 처음에는 접힌 상태로 표시한다. 사용자가 제목을 눌렀을 때만 내용을 펼친다.
@@ -768,6 +779,7 @@ packages/desktop/src/renderer/pages/conversation/Messages/MessageList.tsx
 packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.module.css
 packages/desktop/src/renderer/pages/conversation/Messages/components/MessageThinking.tsx
 packages/desktop/src/renderer/pages/conversation/Messages/components/MessageToolGroupSummary.tsx
+packages/desktop/src/renderer/pages/conversation/components/WorkspaceCollapse.tsx
 packages/desktop/src/renderer/pages/conversation/explorer/ExplorerContainer.tsx
 packages/desktop/src/renderer/pages/conversation/explorer/ExplorerPanel.tsx
 packages/desktop/src/renderer/pages/conversation/explorer/explorerStore.ts
@@ -1823,7 +1835,7 @@ a8dfddf4dd113ab7171907cc4e91b6fcb45b9584155dc42b8dac95fc7df65840  sm-atlas-aion/
 4094f9624457aed0caf9e09aa05d6333e5ba9d0cd4437b8d2c05e936a5170d62  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/hooks/useDragAndDrop.ts
 7f8ef8a43e0abf64dab4c4fb232aa0b8d7be5ce9e6eb1d81388c3b218355d32b  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/hooks/useVisibleConversationIds.ts
 f72857166d0896270e430a9c86c02233b452b4968bf85439ebdedc0ba190c996  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/hooks/useWorkspaceExpansionState.ts
-4fc7d26872269f94218b3e8705c14e62fe151622bdce51adcb5912442a5bed9b  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/index.tsx
+decc6a28c04249c5320b331d720f42ffe5d82e580a94c47008ce62a4f4e46de6  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/index.tsx
 f670d6f90a70501d822c887f1ce9a7eff7088f4f18d6b111d0e536bf9a0df7bc  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/types.ts
 72427f702252dc66b14ad943df78c637f4d8d5e5497248a19abebb491e52915d  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/utils/exportHelpers.ts
 4a900226019c3c7a1d078378a5ac0e2212062418f515236d2569b85591ece203  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/utils/groupingHelpers.ts
@@ -1966,7 +1978,7 @@ e98cdcf03ab7b1b616c2764bbcb3074a0a8a024288ef7ef5b5b6d5968d30f580  sm-atlas-aion/
 9c8cec9338a1068510fa97a57b8e28877ece5938167f7d7abf971c246b2908c3  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/components/ConversationTitleMinimap/useMinimapPanel.ts
 2cad0bf8a5e1f8ce8cc0f85f89c55a5005d579cd495ffbe76f86e0644c53980d  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/components/SingleChatEmptyState.tsx
 9270a7b8488ee1fc570e8bb51f3af5bf969733c24230a8444061b8eb21173638  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/components/SkillRuleGenerator.tsx
-67123808da1bb27355edd916d87d69868805665af3373c219f5972e168dd8f2e  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/components/WorkspaceCollapse.tsx
+ff15bf9193b88922f8c3326a3232a99c3b0f7b218826fbcf707e339dcd13c750  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/components/WorkspaceCollapse.tsx
 c1a741e77e14693bdd4462a0b44ee96ef3db4d9171277434005b0ce79bf760aa  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/explorer/ExplorerContainer.tsx
 a7dfc3ea09b566059b4ba5f588e9ab1924590681a3f6f5f23f35a7b39f7630bd  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/explorer/ExplorerPanel.tsx
 c3e55337bd798422c36b83acf43479abfd5a655206959b57bc438f2e7c469496  sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/explorer/currentConversationStore.ts
@@ -2695,7 +2707,7 @@ afc744235748e4251b4f6e147b1245789d78fb579dec5f609c05d0ead30c8d68  sm-atlas-aion/
 25910e855658b77881fb955db09772c491dc5a361b379d6e5934ef238c0b722f  sm-atlas-aion/tests/e2e/cases/smatlas/index.ts
 ed0b81223bcb12a88edb7da292edac333f76bc3f477114546bbb0a661e46a676  sm-atlas-aion/tests/e2e/cases/smatlas/installerRuntime.nsi
 43c4b62b0b45a9dc7e348dadce8c42d9263ac44ad1fafc3886a994809af86d54  sm-atlas-aion/tests/e2e/cases/smatlas/installerRuntime.smoke.cjs
-ba5850d423256526e21f5dee00de024fc71eafa7542b9830289e1630d369974d  sm-atlas-aion/tests/e2e/cases/smatlas/projectSessions.e2e.ts
+6ad57321b54902738e4eaa862767fc7b4ad1162ca4ee2306e1876fb15859e2e9  sm-atlas-aion/tests/e2e/cases/smatlas/projectSessions.e2e.ts
 a87b1a6e6962ccce194796a23c83d7490f358589a2cd2592d79b0e305bf3ea72  sm-atlas-aion/tests/e2e/cases/smatlas/windowsExplorer.e2e.ts
 1fc6394891633a4645fb7bedf2996422c51b38aff31c66283bdc668b74faebce  sm-atlas-aion/tests/e2e/cases/teams/team-agent-lifecycle.e2e.ts
 62f6a4b2494bb8e70b57ce69ecab2db31a6bddb674c2168c1277146e4df38c5d  sm-atlas-aion/tests/e2e/cases/teams/team-communication.e2e.ts
@@ -136831,7 +136843,7 @@ export const useWorkspaceExpansionState = (): string[] => {
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/hooks/useWorkspaceExpansionState.ts
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/GroupedHistory/index.tsx
-FILE_METADATA: {"encoding":"utf8","originalBytes":24230,"payloadBytes":24230,"sha256":"4fc7d26872269f94218b3e8705c14e62fe151622bdce51adcb5912442a5bed9b"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":23885,"payloadBytes":23885,"sha256":"decc6a28c04249c5320b331d720f42ffe5d82e580a94c47008ce62a4f4e46de6"}
 FILE_CONTENT_BEGIN
 /**
  * @license
@@ -136841,7 +136853,6 @@ FILE_CONTENT_BEGIN
 
 import type { TChatConversation } from '@/common/config/storage';
 import AionModal from '@/renderer/components/base/AionModal';
-import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { useCronJobsMap } from '@/renderer/pages/cron';
 import { restrictToVerticalAxis } from '@/renderer/utils/ui/dndModifiers';
 import { DndContext, closestCenter } from '@dnd-kit/core';
@@ -136875,8 +136886,6 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
   const { id } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const layout = useLayoutContext();
-  const isMobile = layout?.isMobile ?? false;
   const { getJobStatus, markAsRead, setActiveConversation } = useCronJobsMap();
   const projectWorkspace = useProjectWorkspace();
   const projectPaths = useMemo(
@@ -137339,14 +137348,12 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                         </Tooltip>
                       }
                       trailing={
-                        <span className='flex items-center gap-6px'>
+                        <span className='flex shrink-0 items-center gap-6px'>
                           <Tooltip content={t('conversation.history.newConversationInProject')} position='top'>
                             <Button
                               type='text'
                               aria-label={t('conversation.history.newConversationInProject')}
-                              className={classNames(
-                                '!p-0 !h-24px !w-24px !min-w-0 text-t-secondary hover:text-t-primary rd-4px sider-action-btn'
-                              )}
+                              className='!p-0 !h-24px !w-24px !min-w-0 shrink-0 text-t-secondary hover:text-t-primary rd-4px sider-action-btn'
                               onClick={(e) => {
                                 e.stopPropagation();
                                 openProject(group.workspace);
@@ -137362,16 +137369,14 @@ const WorkspaceGroupedHistory: React.FC<WorkspaceGroupedHistoryProps> = ({
                             getPopupContainer={() => document.body}
                             unmountOnExit={false}
                           >
-                            <span
+                            <Button
+                              type='text'
                               aria-label={t('guid.projectWorkspace.projectActions')}
-                              className={classNames(
-                                'flex-center cursor-pointer transition-colors text-t-secondary hover:text-t-primary size-20px rd-4px sider-action-btn',
-                                isMobile ? 'flex' : 'hidden group-hover:flex'
-                              )}
+                              className='!p-0 !h-24px !w-24px !min-w-0 shrink-0 text-t-secondary hover:text-t-primary rd-4px sider-action-btn'
                               onClick={(e) => e.stopPropagation()}
                             >
                               <MoreOne theme='outline' size='14' fill='currentColor' className='block leading-none' />
-                            </span>
+                            </Button>
                           </Dropdown>
                         </span>
                       }
@@ -164263,7 +164268,7 @@ export default SkillRuleGenerator;
 
 FILE_END: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/components/SkillRuleGenerator.tsx
 FILE_BEGIN: sm-atlas-aion/packages/desktop/src/renderer/pages/conversation/components/WorkspaceCollapse.tsx
-FILE_METADATA: {"encoding":"utf8","originalBytes":3524,"payloadBytes":3524,"sha256":"67123808da1bb27355edd916d87d69868805665af3373c219f5972e168dd8f2e"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":3462,"payloadBytes":3462,"sha256":"ff15bf9193b88922f8c3326a3232a99c3b0f7b218826fbcf707e339dcd13c750"}
 FILE_CONTENT_BEGIN
 /**
  * @license
@@ -164339,9 +164344,9 @@ const WorkspaceCollapse: React.FC<WorkspaceCollapseProps> = ({
             {/* 标题内容 — flex 容器让内部 header span 的 truncate 生效 */}
             <div className='flex-1 min-w-0 flex items-center overflow-hidden'>{header}</div>
 
-            {/* 尾部操作槽 — 固定宽度让文本提前截断；按钮 hover 才出现时允许左溢出到文本区覆盖最后 1-2 字 */}
+            {/* Reserve the full action width so buttons never overlap the project title. */}
             {trailing && (
-              <div className='shrink-0 flex items-center justify-end w-22px' onClick={(e) => e.stopPropagation()}>
+              <div className='shrink-0 flex items-center justify-end' onClick={(e) => e.stopPropagation()}>
                 {trailing}
               </div>
             )}
@@ -777781,7 +777786,7 @@ console.log(JSON.stringify(result));
 
 FILE_END: sm-atlas-aion/tests/e2e/cases/smatlas/installerRuntime.smoke.cjs
 FILE_BEGIN: sm-atlas-aion/tests/e2e/cases/smatlas/projectSessions.e2e.ts
-FILE_METADATA: {"encoding":"utf8","originalBytes":4149,"payloadBytes":4149,"sha256":"ba5850d423256526e21f5dee00de024fc71eafa7542b9830289e1630d369974d"}
+FILE_METADATA: {"encoding":"utf8","originalBytes":5551,"payloadBytes":5551,"sha256":"6ad57321b54902738e4eaa862767fc7b4ad1162ca4ee2306e1876fb15859e2e9"}
 FILE_CONTENT_BEGIN
 import { mkdir, stat } from 'node:fs/promises';
 import { test, expect } from './index';
@@ -777811,15 +777816,33 @@ test('projects persist independently and own multiple separate sessions', async 
   await page.reload();
   await expect(page.getByTestId('selected-project-path')).toHaveText(firstDirectory, { timeout: 30000 });
   await expect(page.getByTestId('start-project-session')).toBeEnabled({ timeout: 30000 });
+  const firstProject = page.locator('[data-project-path]').filter({ hasText: '업무 프로젝트' });
+  const newProjectChat = firstProject.getByRole('button', { name: /New chat in this project|이 프로젝트에서 새 대화/ });
+  const projectActions = firstProject.getByLabel(/Project actions|프로젝트 메뉴/i);
+  await page.getByTestId('project-session-toolbar').hover();
+  await expect(newProjectChat).toBeVisible();
+  await expect(projectActions).toBeVisible();
+  const restingBounds = await Promise.all([newProjectChat.boundingBox(), projectActions.boundingBox()]);
+  const projectTitleBounds = await firstProject.getByRole('button', { name: /업무 프로젝트/ }).boundingBox();
+  if (!projectTitleBounds || !restingBounds[0] || !restingBounds[1])
+    throw new Error('Project actions must have bounds');
+  expect(projectTitleBounds.x + projectTitleBounds.width).toBeLessThanOrEqual(restingBounds[0].x);
+  expect(restingBounds[0].x + restingBounds[0].width).toBeLessThanOrEqual(restingBounds[1].x);
+  await firstProject.hover();
+  expect(await Promise.all([newProjectChat.boundingBox(), projectActions.boundingBox()])).toEqual(restingBounds);
+  await page.getByTestId('project-session-toolbar').hover();
+  expect(await Promise.all([newProjectChat.boundingBox(), projectActions.boundingBox()])).toEqual(restingBounds);
+  await page.screenshot({
+    path: testInfo.outputPath('project-actions-visible.png'),
+    fullPage: true,
+    animations: 'disabled',
+  });
   await page.screenshot({ path: testInfo.outputPath('empty-project.png'), fullPage: true, animations: 'disabled' });
 
   await page.getByTestId('start-project-session').click();
   await expect(page).toHaveURL(/#\/conversation\//, { timeout: 30000 });
   const firstSession = page.url();
-  await page
-    .getByTestId('project-session-toolbar')
-    .getByRole('button', { name: /New session|새 세션/ })
-    .click();
+  await newProjectChat.click();
   await expect(page.getByTestId('selected-project-path')).toHaveText(firstDirectory);
   await page.getByTestId('start-project-session').click();
   await expect(page).toHaveURL(/#\/conversation\//, { timeout: 30000 });
@@ -777844,13 +777867,13 @@ test('projects persist independently and own multiple separate sessions', async 
   await expect(page.getByTestId('selected-project-path')).toHaveText(firstDirectory);
   await page.screenshot({ path: testInfo.outputPath('project-sessions.png'), fullPage: true, animations: 'disabled' });
 
-  const firstProject = page.locator('[data-project-path]').filter({ hasText: '업무 프로젝트' });
   await expect(firstProject.locator('.conversation-item')).toHaveCount(2);
   expect(secondSession).not.toBe(firstSession);
   const otherProject = page.locator('[data-project-path]').filter({ hasText: 'other-project' });
   await otherProject.getByRole('button', { name: /other-project/ }).click();
   await expect(page.getByTestId('selected-project-path')).toHaveText(secondDirectory);
-  await otherProject.hover();
+  await page.getByTestId('project-session-toolbar').hover();
+  await expect(otherProject.getByLabel(/Project actions|프로젝트 메뉴/i)).toBeVisible();
   await otherProject.getByLabel(/Project actions|프로젝트 메뉴/i).click();
   await page.getByText(/Remove from list|목록에서 제거/).click();
   await expect(page.locator('[data-project-path]')).toHaveCount(1);
